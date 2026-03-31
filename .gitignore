@@ -1,0 +1,35 @@
+# Environment / secrets
+.env
+apikey.txt
+WeatherArb.txt
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# R artifacts (legacy)
+.Rhistory
+.Rproj.user/
+
+# OS
+.DS_Store
+Thumbs.db
