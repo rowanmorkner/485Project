@@ -4,6 +4,7 @@ apikey.txt
 WeatherArb.txt
 *.pem
 *.key
+kalshi_private_key.pem
 
 # Python
 __pycache__/
