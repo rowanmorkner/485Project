@@ -127,22 +127,23 @@ class PolymarketClient:
     only_open: bool = True,
   ) -> list[dict]:
     """
-    Search for weather/temperature events by city name.
+    Search for daily-high-temperature events by city name.
 
-    Uses tag_slug="temperature" to find daily temperature events,
-    then filters by city name in the event title.
+    Polymarket files these under tag_slug="weather" (~180 events globally).
+    We pull all of them, then filter by both city name AND the "Highest
+    temperature" prefix to exclude the matching "Lowest temperature" events.
     """
     closed = False if only_open else None
     events = self.search_events(
-      tag_slug="temperature",
+      tag_slug="weather",
       closed=closed,
-      limit=50,
+      limit=500,
     )
-    # Filter to events that mention the target city
     city_lower = city.lower()
     return [
       e for e in events
       if city_lower in e.get("title", "").lower()
+      and "highest temperature" in e.get("title", "").lower()
     ]
 
   def search_markets(

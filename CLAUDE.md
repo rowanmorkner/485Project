@@ -33,5 +33,9 @@ allowedTools:
 - `main.py` — Entry point / orchestrator
 
 ## Key API Details
-- **Kalshi**: RSA-PSS signed auth, base URL `https://api.elections.kalshi.com/trade-api/v2`, Miami series ticker `KXHIGHMIA`
+- **Kalshi**: RSA-PSS signed auth, base URL `https://api.elections.kalshi.com/trade-api/v2`,
 - **Polymarket**: Gamma API for event discovery (use `tag_slug` param, not `_q`), CLOB API for pricing. No auth for reads.
+
+
+# Claude chats to resume later: 
+*polymarket orders:* 26edb4cf-13ac-4ce8-87df-5c53fbe766cb

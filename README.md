@@ -9,8 +9,7 @@ The bot reconstructs **per-degree probability distributions** from each source's
 Opportunities are classified by risk:
 - **CLEAN ARB** — Both platforms resolve against the same weather station. True arbitrage.
 - **BASIS RISK** — Platforms resolve against different stations (e.g., Central Park vs LaGuardia for NYC). Edge may be absorbed by 1-3°F station divergence. Requires a higher threshold.
-- **FORECAST** — Market is mispriced relative to the NWS forecast. Depends on forecast accuracy.
-
+- **FORECAST** — Market is mispriced relative to the NWS forecast. Depends on forecast accuracy
 ## Architecture
 
 ```

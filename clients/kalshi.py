@@ -23,8 +23,6 @@ import requests
 # Kalshi production API base URL
 BASE_URL = "https://api.elections.kalshi.com/trade-api/v2"
 
-# Series ticker for Miami daily high temperature markets
-MIAMI_HIGH_TEMP_SERIES = "KXHIGHMIA"
 
 
 class KalshiClient:
@@ -60,17 +58,6 @@ class KalshiClient:
     self.base_url = base_url.rstrip("/")
     self.session = requests.Session()
 
-    # Validate that credentials are available
-    if not self.api_key_id:
-      raise ValueError(
-        "Kalshi API key ID is required. Set KALSHI_API_KEY_ID env var "
-        "or pass api_key_id to constructor."
-      )
-    if not self.private_key_path:
-      raise ValueError(
-        "Kalshi private key path is required. Set KALSHI_PRIVATE_KEY_PATH env var "
-        "or pass private_key_path to constructor."
-      )
 
     # Load and parse the RSA private key once at init
     self._private_key = self._load_private_key()
