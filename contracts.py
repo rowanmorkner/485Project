@@ -165,4 +165,5 @@ class OrderRequest:
   size: int                       # contracts (Kalshi) or shares (Polymarket)
   expected_edge: float            # for logging / sanity-check by execution
   client_order_id: str            # caller-generated UUID for deduplication
+  condition_id: str
   source_opportunity: ArbOpportunity | None = None  # for traceability
