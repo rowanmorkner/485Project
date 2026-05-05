@@ -94,3 +94,11 @@ python strategy/arbitrage.py
 - **Kalshi**: RSA-PSS signing (SHA-256, MGF1, salt=digest length). Base URL: `https://api.elections.kalshi.com/trade-api/v2`
 - **Polymarket**: Gamma API (`gamma-api.polymarket.com`) for event discovery via `tag_slug="temperature"`. CLOB API (`clob.polymarket.com`) for orderbook pricing.
 - **NWS**: Free public API at `api.weather.gov`. Requires `User-Agent` header. Forecasts fetched per-gridpoint to match each platform's resolution station.
+
+/resume 7eb392f9-df5e-4115-b48c-0ef1de077499
+a: add a new function. B. ok heres a key insight: the loss zone only matters when the market resolves within the
+  bracket. Right? if the markets dont resolve within the one degree overlap we dont have any issues. (double check
+  this) I think we need to brainstorm the best ways to handle gap zone risk, this will probably take some data
+  analysis to inform our decision. for now, assume some probability that the most likely bracket will have some
+  probability of risk. i believe you pointed out it was 1/5 above? so .2 (I guess this is the expected value) C. find
+  the size where both legs hedge each other.

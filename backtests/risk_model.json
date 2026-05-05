@@ -1,0 +1,57 @@
+{
+  "Miami": {
+    "n_days_observed": 363,
+    "p_divergence_1f": 0.6474,
+    "p_divergence_2f": 0.135,
+    "p_divergence_3f": 0.0165,
+    "median_abs_divergence": 1.0,
+    "settlement_n_pairs": 66,
+    "settlement_disagree_pct": 0.09090909090909091,
+    "recommended_min_edge_haircut": 0.0675,
+    "notes": "CLI vs ASOS-max measured over 363 days; Kalshi-vs-Polymarket settlement compared over 66 dates. Haircut = 0.5 * P(|\u0394|>=2\u00b0F)."
+  },
+  "LA": {
+    "n_days_observed": 363,
+    "p_divergence_1f": 0.6364,
+    "p_divergence_2f": 0.1322,
+    "p_divergence_3f": 0.0193,
+    "median_abs_divergence": 1.0,
+    "settlement_n_pairs": 32,
+    "settlement_disagree_pct": 0.03125,
+    "recommended_min_edge_haircut": 0.0661,
+    "notes": "CLI vs ASOS-max measured over 363 days; Kalshi-vs-Polymarket settlement compared over 32 dates. Haircut = 0.5 * P(|\u0394|>=2\u00b0F)."
+  },
+  "Austin": {
+    "n_days_observed": 365,
+    "p_divergence_1f": 0.6548,
+    "p_divergence_2f": 0.1123,
+    "p_divergence_3f": 0.0192,
+    "median_abs_divergence": 1.0,
+    "settlement_n_pairs": 32,
+    "settlement_disagree_pct": 0.03125,
+    "recommended_min_edge_haircut": 0.0561,
+    "notes": "CLI vs ASOS-max measured over 365 days; Kalshi-vs-Polymarket settlement compared over 32 dates. Haircut = 0.5 * P(|\u0394|>=2\u00b0F)."
+  },
+  "San Francisco": {
+    "n_days_observed": 361,
+    "p_divergence_1f": 0.6648,
+    "p_divergence_2f": 0.1634,
+    "p_divergence_3f": 0.0443,
+    "median_abs_divergence": 1.0,
+    "settlement_n_pairs": 32,
+    "settlement_disagree_pct": 0.03125,
+    "recommended_min_edge_haircut": 0.0817,
+    "notes": "CLI vs ASOS-max measured over 361 days; Kalshi-vs-Polymarket settlement compared over 32 dates. Haircut = 0.5 * P(|\u0394|>=2\u00b0F)."
+  },
+  "Seattle": {
+    "n_days_observed": 362,
+    "p_divergence_1f": 0.5967,
+    "p_divergence_2f": 0.0746,
+    "p_divergence_3f": 0.0028,
+    "median_abs_divergence": 1.0,
+    "settlement_n_pairs": 67,
+    "settlement_disagree_pct": 0.014925373134328358,
+    "recommended_min_edge_haircut": 0.0373,
+    "notes": "CLI vs ASOS-max measured over 362 days; Kalshi-vs-Polymarket settlement compared over 67 dates. Haircut = 0.5 * P(|\u0394|>=2\u00b0F)."
+  }
+}

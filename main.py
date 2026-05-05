@@ -30,13 +30,15 @@ from strategy.parsers import (
   parse_polymarket_quotes,
 )
 from strategy.distributions import forecast_to_distribution
-from strategy.arbitrage import find_discrepancies, find_value_trades
+from strategy.arbitrage import find_discrepancies, find_value_trades, find_paired_arbitrage
+from strategy.orders import from_opportunity
 from strategy.matching import (
   parse_kalshi_date,
   parse_polymarket_date,
   match_events_by_date,
 )
 from strategy.display import display_comparison
+from persistence import db as persist
 
 
 logging.basicConfig(
@@ -236,6 +238,16 @@ def analyze_city(
     print(f"  No events found for {city_name}.\n")
     return
 
+  # Durable log of every venue snapshot we just fetched. The training jobs
+  # in bin/ read from these rows to refresh the per-city Δ histogram and
+  # detect drift. One row per (city, date, venue) per poll.
+  for ev in kalshi_data:
+    if ev.get("date") and ev.get("brackets"):
+      persist.write_snapshot(city_name, ev["date"], "kalshi", ev["brackets"])
+  for ev in poly_data:
+    if ev.get("date") and ev.get("brackets"):
+      persist.write_snapshot(city_name, ev["date"], "polymarket", ev["brackets"])
+
   # Cities now share one resolution station per row, so one forecast per date
   logger.info("[%s] Fetching NWS forecasts (station: %s)...", city_name, station)
   forecasts: dict[str, float] = {}
@@ -260,12 +272,22 @@ def analyze_city(
       print("  NWS Forecast: not available")
     print("#" * 78)
 
-    # Build per-degree distributions for whichever sources are available
+    # Build per-degree distributions for whichever sources are available.
+    # Pass city to forecast_to_distribution so it can apply per-city
+    # calibration from data/forecast_calibration.json (auto-tuned std_dev
+    # and bias from prior settled forecasts; falls back to default 2.0°F).
     kalshi_dist = parse_kalshi_bins(kalshi_event["brackets"]) if kalshi_event else {}
     poly_dist = parse_polymarket_bins(poly_event["brackets"]) if poly_event else {}
     forecast_dist = (
-      forecast_to_distribution(forecast_high) if forecast_high is not None else {}
+      forecast_to_distribution(forecast_high, city=city_name)
+      if forecast_high is not None else {}
     )
+
+    # Persist the forecast PDF so bin/calibrate_forecast.py can later
+    # compare it against the actual settled high.
+    if forecast_dist:
+      persist.write_forecast(city_name, date, forecast_dist,
+                             source="nws_normal", std_dev=2.0)
 
     source_count = sum([bool(kalshi_dist), bool(poly_dist), bool(forecast_dist)])
     if source_count < 2:
@@ -323,10 +345,49 @@ def analyze_city(
           f"max size={opp.max_size})"
         )
         print(f"    market_id={opp.market_id}")
+        # Persist the recommendation as a 'pending' order. In paper-trading
+        # mode (env PAPER_TRADING=1), strategy/orders.from_opportunity also
+        # records a synthetic fill at intended_price so settle_orders.py can
+        # score it once the market settles. See bin/run_loop.py.
+        try:
+          from_opportunity(opp)
+        except Exception as exc:
+          logger.warning("Failed to log order for %s: %s", opp.market_id, exc)
     elif not forecast_dist:
       print("  No forecast available — cannot score value trades.")
     else:
       print("  No value trades found above threshold.")
+
+    # ── Paired (cross-venue, opposite-side) arb signals ───────────────
+    # Independent of value trades. These are YES/NO bets across overlapping
+    # brackets; the loss zone is the asymmetric difference of the two
+    # brackets, weighted by the gap-zone risk haircut (default 0.2).
+    if forecast_dist and kalshi_event and poly_event:
+      paired = find_paired_arbitrage(
+        poly_quotes=parse_polymarket_quotes(poly_event["brackets"]),
+        kalshi_quotes=parse_kalshi_quotes(kalshi_event["brackets"]),
+        forecast_pdf=forecast_dist,
+        city=city_name, date=date,
+      )
+      print("\n" + "=" * 78)
+      print("  PAIRED ARB OPPORTUNITIES (gap_zone_risk = 0.2)")
+      print("=" * 78)
+      if paired:
+        for p in paired:
+          print(f"\n  [{p.direction}]")
+          print(f"    Poly  {p.poly_side.upper()} {p.poly_bracket_label:14s} "
+                f"@ {p.poly_price:.4f} (avail {p.poly_size_avail})")
+          print(f"    Kalshi {p.kalshi_side.upper()} {p.kalshi_bracket_label:14s} "
+                f"@ {p.kalshi_price:.4f} (avail {p.kalshi_size_avail})")
+          print(f"    cost/pair={p.cost_per_pair:.4f}  "
+                f"E[payout]={p.expected_payout:.4f}  "
+                f"EV={p.expected_value:+.4f}")
+          print(f"    loss_zone={p.loss_zone_degrees}  "
+                f"P(loss)={p.loss_zone_prob:.4f}  "
+                f"haircut={p.gap_zone_haircut:.4f}  "
+                f"net_edge={p.net_edge:+.4f}  size={p.max_size}")
+      else:
+        print("  No paired arbs found above threshold.")
 
     print()
 

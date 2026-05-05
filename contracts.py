@@ -97,6 +97,55 @@ class ArbOpportunity:
   max_size: int                   # top-of-book depth cap (contracts)
 
 
+# ── Paired (cross-venue, opposite-side) arb opportunities ────────────────
+
+@dataclass
+class PairedArbOpportunity:
+  """
+  A two-leg position that bets WITH one venue's bracket and AGAINST the
+  other venue's overlapping bracket. The legs are typed:
+    leg_a: "buy YES on Polymarket"   (wins if Poly_reading ∈ poly_degrees)
+    leg_b: "buy NO  on Kalshi"       (wins if Kalshi_reading ∉ kalshi_degrees)
+
+  The "loss zone" is the set of degrees where Poly_bracket has no
+  coverage AND Kalshi_bracket DOES have coverage — typically a single
+  degree at the offset boundary (Polymarket 75-77 vs Kalshi 76-78 → 78).
+  Resolution divergence between venues effectively widens this zone.
+
+  The orientation can be flipped (NO Poly + YES Kalshi). `direction`
+  field disambiguates.
+  """
+  city: str
+  date: str
+  direction: str                  # "poly_yes_kalshi_no" | "poly_no_kalshi_yes"
+
+  # Polymarket leg
+  poly_market_id: str
+  poly_bracket_label: str
+  poly_degrees: list[int]
+  poly_side: str                  # "yes" | "no"
+  poly_price: float               # what we pay per contract
+  poly_size_avail: int            # top-of-book depth on the leg's side
+
+  # Kalshi leg
+  kalshi_market_id: str
+  kalshi_bracket_label: str
+  kalshi_degrees: list[int]
+  kalshi_side: str                # "yes" | "no"
+  kalshi_price: float             # what we pay per contract
+  kalshi_size_avail: int
+
+  # Pricing / risk
+  cost_per_pair: float            # poly_price + kalshi_price
+  expected_payout: float          # using convolved per-venue PDFs
+  expected_value: float           # expected_payout - cost_per_pair
+  loss_zone_degrees: list[int]    # where neither leg wins (forecast frame)
+  loss_zone_prob: float           # Σ forecast_pdf over loss_zone_degrees
+  gap_zone_haircut: float         # = gap_zone_risk * loss_zone_prob
+  net_edge: float                 # expected_value - haircut - fees
+  max_size: int                   # min(poly_size_avail, kalshi_size_avail)
+
+
 # ── Strategy → Execution handoff ──────────────────────────────────────────
 
 @dataclass

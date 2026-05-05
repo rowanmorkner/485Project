@@ -5,7 +5,29 @@ Pure functions over dict[int, float] distributions keyed by integer °F.
 This module has no dependencies on other strategy modules.
 """
 
+import json
 import math
+from pathlib import Path
+
+# Optional per-city forecast calibration (written by bin/calibrate_forecast.py).
+# When absent, forecast_to_distribution falls back to the caller-supplied
+# std_dev (default 2.0°F).
+_CALIBRATION_PATH = Path(__file__).resolve().parent.parent / "data" / "forecast_calibration.json"
+_cal_cache: dict[str, dict] = {}
+_cal_mtime: float = 0.0
+
+
+def _load_calibration() -> dict[str, dict]:
+  """Mtime-aware read of forecast_calibration.json."""
+  global _cal_cache, _cal_mtime
+  if not _CALIBRATION_PATH.exists():
+    return {}
+  m = _CALIBRATION_PATH.stat().st_mtime
+  if m == _cal_mtime and _cal_cache:
+    return _cal_cache
+  _cal_cache = json.loads(_CALIBRATION_PATH.read_text())
+  _cal_mtime = m
+  return _cal_cache
 
 
 def _normal_cdf(x: float) -> float:
@@ -39,6 +61,7 @@ def build_cdf(distribution: dict[int, float]) -> dict[int, float]:
 def forecast_to_distribution(
   forecast_high: float,
   std_dev: float = 2.0,
+  city: str | None = None,
 ) -> dict[int, float]:
   """
   Convert a single point forecast (e.g. NWS forecast high) into a per-degree
@@ -51,7 +74,18 @@ def forecast_to_distribution(
     forecast_high: Forecast high temperature in °F.
     std_dev: Forecast uncertainty in °F. Default 2.0°F is a reasonable
       24-48hr NWS proxy (~95% within ±4°F).
+    city: Optional city name. If provided AND data/forecast_calibration.json
+      has a "publish": true entry for this city, the empirical std_dev and
+      bias from past observations override the caller's defaults. Lets the
+      bot self-tune as it accumulates settled forecasts.
   """
+  # Apply per-city calibration if available
+  if city:
+    cal = _load_calibration().get(city, {})
+    if cal.get("publish"):
+      std_dev = cal.get("empirical_std_dev", std_dev) or std_dev
+      forecast_high = forecast_high + cal.get("bias", 0.0)
+
   distribution: dict[int, float] = {}
   # Cover ±4 sigma around the forecast
   lo = int(math.floor(forecast_high - 4 * std_dev))
