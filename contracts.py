@@ -48,6 +48,7 @@ class BracketQuote:
   best_ask: float | None          # YES ask in dollars (cost when buying 1)
   bid_size: float                 # contracts/shares resting at best_bid
   ask_size: float                 # contracts/shares resting at best_ask
+  condition_id: str = ""          # Polymarket market conditionId; "" for Kalshi
   ladder_bids: list[tuple[float, float]] = field(default_factory=list)
   ladder_asks: list[tuple[float, float]] = field(default_factory=list)
   # ladder_* are full books (price, size) ordered worst-to-best, useful
@@ -95,6 +96,7 @@ class ArbOpportunity:
   fair_value: float               # forecast EV for this bracket (sum of pdf over degrees)
   net_edge: float                 # |fair - price| - fees, in dollars per contract
   max_size: int                   # top-of-book depth cap (contracts)
+  condition_id: str = ""          # Polymarket conditionId; "" for Kalshi
 
 
 # ── Paired (cross-venue, opposite-side) arb opportunities ────────────────
@@ -120,7 +122,8 @@ class PairedArbOpportunity:
   direction: str                  # "poly_yes_kalshi_no" | "poly_no_kalshi_yes"
 
   # Polymarket leg
-  poly_market_id: str
+  poly_market_id: str             # YES token_id
+  poly_condition_id: str          # parent market conditionId
   poly_bracket_label: str
   poly_degrees: list[int]
   poly_side: str                  # "yes" | "no"
