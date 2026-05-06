@@ -21,7 +21,8 @@ import requests
 # --- Constants ---
 
 # Kalshi production API base URL
-BASE_URL = "https://api.elections.kalshi.com/trade-api/v2"
+#BASE_URL = "https://api.elections.kalshi.com/trade-api/v2"
+BASE_URL = os.environ.get("KALSHI_BASE_URL", "https://api.elections.kalshi.com/trade-api/v2")
 
 
 
