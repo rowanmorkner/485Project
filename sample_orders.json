@@ -1,0 +1,20 @@
+{
+  "orders": [
+    {
+      "platform": "kalshi",
+      "ticker": "KXHIGHMIA-26APR26-B84.5",
+      "action": "buy",
+      "side": "yes",
+      "count": 1,
+      "type": "limit"
+    },
+    {
+      "platform": "polymarket",
+      "condition_id": "0xabc123...",
+      "action": "buy",
+      "side": "yes",
+      "count": 1,
+      "type": "limit"
+    }
+  ]
+}
