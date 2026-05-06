@@ -1,10 +1,24 @@
 # Environment / secrets
 .env
+.env.demo
 apikey.txt
 WeatherArb.txt
 *.pem
 *.key
 kalshi_private_key.pem
+485project.txt
+demo485.txt
+
+# Backup and temp files
+*BACKUP*
+*backup*
+*.patch
+harrison_changes.patch
+HARRISON_BACKUP_BEFORE_MERGE.txt
+
+# Trading data / logs
+paper_trades.jsonl
+paper_trades_test.jsonl
 
 # Python
 __pycache__/
