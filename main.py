@@ -259,12 +259,22 @@ def analyze_city(
   for date, kalshi_event, poly_event in matched:
     forecast_high = forecasts.get(date)
 
+    # Skip dates where one venue has no event yet — comparison is misleading
+    # (the missing venue's column shows 0.0000 across every degree, which
+    # looks like "no signal" rather than "no data"). Polymarket typically
+    # lists 1-2 days further ahead than Kalshi, so this commonly fires for
+    # the furthest-out date.
+    if not kalshi_event:
+      print(f"\n  [{city_name} — {date}] no Kalshi event yet — skipping comparison.")
+      continue
+    if not poly_event:
+      print(f"\n  [{city_name} — {date}] no Polymarket event yet — skipping comparison.")
+      continue
+
     print("\n" + "#" * 78)
     print(f"  {city_name} — {date}")
-    if kalshi_event:
-      print(f"  Kalshi: {kalshi_event['event_ticker']}")
-    if poly_event:
-      print(f"  Polymarket: {poly_event['title']}")
+    print(f"  Kalshi: {kalshi_event['event_ticker']}")
+    print(f"  Polymarket: {poly_event['title']}")
     print(f"  Resolution station: {station}")
     if forecast_high is not None:
       print(f"  NWS Forecast High: {forecast_high:.0f}°F")
