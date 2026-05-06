@@ -143,6 +143,7 @@ def from_opportunity(
     size=order_size,
     expected_edge=opp.net_edge,
     client_order_id=str(uuid.uuid4()),
+    condition_id=opp.condition_id,
     source_opportunity=opp,
   )
 
@@ -212,6 +213,7 @@ def from_paired_opportunity(
     fair_value=pair.expected_payout / 2,  # informational; per-leg fair is fuzzy
     net_edge=pair.net_edge,
     max_size=pair.max_size,
+    condition_id=pair.poly_condition_id,
   )
   poly_order = OrderRequest(
     venue="polymarket", market_id=pair.poly_market_id,
@@ -219,6 +221,7 @@ def from_paired_opportunity(
     price=pair.poly_price, size=pair_size,
     expected_edge=pair.net_edge,
     client_order_id=f"{pair_id}::poly",
+    condition_id=pair.poly_condition_id,
     source_opportunity=poly_opp,
   )
 
@@ -236,6 +239,7 @@ def from_paired_opportunity(
     fair_value=pair.expected_payout / 2,
     net_edge=pair.net_edge,
     max_size=pair.max_size,
+    condition_id="",  # Kalshi has no condition_id
   )
   kalshi_order = OrderRequest(
     venue="kalshi", market_id=pair.kalshi_market_id,
@@ -243,6 +247,7 @@ def from_paired_opportunity(
     price=pair.kalshi_price, size=pair_size,
     expected_edge=pair.net_edge,
     client_order_id=f"{pair_id}::kalshi",
+    condition_id="",
     source_opportunity=kalshi_opp,
   )
 

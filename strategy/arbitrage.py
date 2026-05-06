@@ -143,6 +143,7 @@ def find_value_trades(
           # Top-of-book depth caps how much we can trade at this price.
           # Anything beyond walks the book — handle that separately if needed.
           max_size=int(q.ask_size),
+          condition_id=q.condition_id,
         ))
 
     # Sell signal: forecast says fair < best_bid (we can sell above fair value)
@@ -164,6 +165,7 @@ def find_value_trades(
           fair_value=round(fair_value, 4),
           net_edge=round(net_edge, 4),
           max_size=int(q.bid_size),
+          condition_id=q.condition_id,
         ))
 
   opps.sort(key=lambda o: o.net_edge, reverse=True)
@@ -329,6 +331,7 @@ def _evaluate_paired(
   return PairedArbOpportunity(
     city=city, date=date, direction=direction,
     poly_market_id=poly_quote.market_id,
+    poly_condition_id=poly_quote.condition_id,
     poly_bracket_label=poly_quote.label,
     poly_degrees=list(poly_quote.degrees),
     poly_side=poly_side,

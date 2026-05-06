@@ -214,6 +214,7 @@ def parse_polymarket_quotes(brackets: list[dict]) -> list[BracketQuote]:
       best_ask=b.get("best_yes_ask"),
       bid_size=float(b.get("best_yes_bid_size", 0) or 0),
       ask_size=float(b.get("best_yes_ask_size", 0) or 0),
+      condition_id=b.get("condition_id", "") or "",
       ladder_bids=b.get("yes_bid_ladder", []),
       ladder_asks=b.get("yes_ask_ladder", []),
     ))
