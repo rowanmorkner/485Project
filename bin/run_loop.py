@@ -65,7 +65,7 @@ from persistence import db  # noqa: E402
 
 # ── Configuration ────────────────────────────────────────────────────────
 
-POLL_INTERVAL_SEC = int(os.environ.get("POLL_INTERVAL_SEC", 5 * 60))   # 5 min
+POLL_INTERVAL_SEC = int(os.environ.get("POLL_INTERVAL_SEC", 60))       # 1 min
 TRAIN_HOUR_UTC    = int(os.environ.get("TRAIN_HOUR_UTC", 6))           # 06:00 UTC
 LOG_DIR           = PROJECT_ROOT / "logs"
 LOG_FILE          = LOG_DIR / "bot.log"
