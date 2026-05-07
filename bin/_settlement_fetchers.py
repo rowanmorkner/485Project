@@ -82,10 +82,17 @@ def kalshi_market_degrees(market: dict) -> tuple[str, list[int]]:
 
 # ── Polymarket ────────────────────────────────────────────────────────────
 
+POLY_CACHE_TTL_SEC = 6 * 3600  # 6 hours — newly-resolved events refresh on the next training pass
+
+
 def fetch_all_closed_weather_events(p: PolymarketClient) -> list[dict]:
-  """Cached pull of every closed Polymarket weather event."""
+  """Pull every closed Polymarket weather event. Cached for POLY_CACHE_TTL_SEC
+  so a long-running daily-training cron actually picks up newly-resolved
+  events instead of reading a stale snapshot forever."""
   if POLY_CACHE.exists():
-    return json.loads(POLY_CACHE.read_text())
+    age = time.time() - POLY_CACHE.stat().st_mtime
+    if age < POLY_CACHE_TTL_SEC:
+      return json.loads(POLY_CACHE.read_text())
   events: list[dict] = []
   offset = 0
   page = 500

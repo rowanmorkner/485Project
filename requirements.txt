@@ -3,3 +3,7 @@ python-dotenv>=1.0.0
 py_clob_client>=0.1.0
 websockets>=12.0
 cryptography>=41.0.0
+streamlit>=1.40.0
+streamlit-autorefresh>=1.0.1
+plotly>=5.24.0
+pandas>=2.0.0
