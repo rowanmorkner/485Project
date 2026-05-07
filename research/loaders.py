@@ -436,3 +436,90 @@ def settlement_payout_for(position: Position, kalshi_high: Optional[int],
   yes_wins = (position.side == "yes_long" and in_bracket) or \
              (position.side == "no_long" and not in_bracket)
   return 1.0 if yes_wins else 0.0
+
+
+# ── Venue-divergence histograms (Round 2 critical primitive) ─────────────
+# Round 1 finding: of 188 historical (city, date) pairs with both venues'
+# final highs, only 25.5% report identical highs. Kalshi reads ~+1°F
+# higher than Polymarket on average. Any cross-venue strategy MUST model
+# this explicitly or it overstates its true edge.
+
+def venue_divergence_histogram(city: Optional[str] = None,
+                                normalize: bool = True) -> dict[int, float]:
+  """Return the empirical histogram of Δ = kalshi_high - polymarket_high
+  computed from `settlements` rows where BOTH venues are populated.
+
+  Args:
+    city: If provided, restrict to that city; otherwise pool all cities.
+    normalize: If True, returns probabilities (sum=1). If False, returns
+      raw counts.
+  """
+  q = """SELECT kalshi_high_f - polymarket_high_f AS delta
+           FROM settlements
+          WHERE kalshi_high_f IS NOT NULL
+            AND polymarket_high_f IS NOT NULL"""
+  args: tuple = ()
+  if city:
+    q += " AND city = ?"
+    args = (city,)
+  with _conn() as c:
+    rows = c.execute(q, args).fetchall()
+  hist: dict[int, float] = {}
+  for r in rows:
+    d = int(r["delta"])
+    hist[d] = hist.get(d, 0.0) + 1.0
+  if not normalize or not hist:
+    return hist
+  total = sum(hist.values())
+  return {k: v / total for k, v in hist.items()}
+
+
+def joint_kp_distribution(forecast_pdf_kalshi: dict[int, float],
+                          city: Optional[str] = None) -> dict[tuple[int, int], float]:
+  """Approximate joint distribution P(K_high, P_high) by treating the
+  forecast PDF as P(K_high) (NWS forecasts target the same source as
+  Kalshi reads) and convolving with the empirical Δ histogram for
+  P(P_high | K_high).
+
+  P(K=k, P=p) = P(K=k) * P(Δ = k-p | K=k) ≈ P(K=k) * P(Δ = k-p)
+  (assumes Δ independent of K, an approximation the data won't easily
+  refute at n=188; document this in your strategy writeup.)
+  """
+  delta_hist = venue_divergence_histogram(city=city)
+  if not delta_hist:
+    # Fallback: assume venues agree perfectly
+    return {(k, k): p for k, p in forecast_pdf_kalshi.items()}
+  joint: dict[tuple[int, int], float] = {}
+  for k, p_k in forecast_pdf_kalshi.items():
+    for d, p_d in delta_hist.items():
+      p_high_polymarket = k - d
+      key = (k, p_high_polymarket)
+      joint[key] = joint.get(key, 0.0) + p_k * p_d
+  return joint
+
+
+def expected_payout_under_joint_kp(
+  pair_payout_fn,                    # callable (k, p) -> payout in $
+  joint_kp: dict[tuple[int, int], float],
+) -> float:
+  """E[payout] under the joint K,P distribution. `pair_payout_fn` returns
+  the $/pair payout when Kalshi reads k and Polymarket reads p."""
+  return sum(joint_kp[k, p] * pair_payout_fn(k, p) for (k, p) in joint_kp)
+
+
+def quantile_payout_under_joint_kp(
+  pair_payout_fn, joint_kp: dict[tuple[int, int], float], q: float = 0.05,
+) -> float:
+  """Lower tail quantile of payout (default 5th percentile). Useful for
+  CVaR-style risk filters: 'reject pairs with q05_payout < entry_cost'.
+  """
+  pairs = sorted(
+    [(pair_payout_fn(k, p), p_w) for (k, p), p_w in joint_kp.items()],
+    key=lambda t: t[0],
+  )
+  cum = 0.0
+  for payout, w in pairs:
+    cum += w
+    if cum >= q:
+      return payout
+  return pairs[-1][0] if pairs else 0.0
