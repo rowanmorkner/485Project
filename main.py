@@ -1,15 +1,10 @@
 """
-Weather Arbitrage Bot — Main Entry Point.
+Weather Arbitrage Bot — main entry point.
 
-Thin orchestrator: for each configured city, fetch venue data + NWS forecast,
-build per-degree distributions, print comparison, and flag arb opportunities.
-
-Heavy lifting lives in:
-  strategy/parsers.py        — venue bracket → PMF
-  strategy/distributions.py  — PMF/CDF math
-  strategy/arbitrage.py      — discrepancy & arb detection
-  strategy/matching.py       — date parsing & cross-venue event pairing
-  strategy/display.py        — console tables
+Per city: fetch venue brackets + NWS forecast, persist snapshots and
+forecast PDF, then run the cross-venue hedged-pair selector. Accepted
+pairs are turned into OrderRequest pairs (logged to bot.db; if
+PAPER_TRADING=1, synthetic fills are recorded immediately).
 """
 
 import json
@@ -23,21 +18,17 @@ from config import CITIES
 from clients.kalshi import KalshiClient
 from clients.polymarket import PolymarketClient
 from clients.weather import NWSClient
-from strategy.parsers import (
-  parse_kalshi_bins,
-  parse_polymarket_bins,
-  parse_kalshi_quotes,
-  parse_polymarket_quotes,
-)
+from strategy.parsers import parse_kalshi_quotes, parse_polymarket_quotes
 from strategy.distributions import forecast_to_distribution
-from strategy.arbitrage import find_discrepancies, find_value_trades, find_paired_arbitrage
-from strategy.orders import from_opportunity
+from strategy.arbitrage import find_hedged_pairs
+from strategy.orders import from_hedged_pair
+from strategy.execution import execute_order
 from strategy.matching import (
   parse_kalshi_date,
   parse_polymarket_date,
   match_events_by_date,
 )
-from strategy.display import display_comparison
+from strategy.display import display_hedged_pairs
 from persistence import db as persist
 
 
@@ -68,12 +59,10 @@ def fetch_kalshi_events(client: KalshiClient, series_ticker: str) -> list[dict]:
     brackets = []
     for m in markets_resp.get("markets", []):
       ticker = m["ticker"]
-      # Kalshi exposes the human range under either 'subtitle' or 'yes_sub_title'
       subtitle = m.get("subtitle", "") or m.get("yes_sub_title", "")
 
-      # Pull pricing from the orderbook. Kalshi puts best price at the END
-      # of each ladder. yes_dollars = YES bid ladder, no_dollars = NO bid
-      # ladder. Best YES ask = 1 - best NO bid (binary-market identity).
+      # Kalshi puts best price at the END of each ladder. yes_dollars = YES
+      # bid ladder, no_dollars = NO bid ladder. Best YES ask = 1 - best NO bid.
       ob = client.get_orderbook(ticker)
       book = ob.get("orderbook_fp", {})
       yes_levels = book.get("yes_dollars", [])
@@ -84,12 +73,8 @@ def fetch_kalshi_events(client: KalshiClient, series_ticker: str) -> list[dict]:
       best_no_bid = float(no_levels[-1][0]) if no_levels else None
       best_no_bid_size = float(no_levels[-1][1]) if no_levels else 0.0
       best_yes_ask = round(1 - best_no_bid, 4) if best_no_bid is not None else None
-      # Size at best YES ask = size at best NO bid (same liquidity, opposite sign)
       best_yes_ask_size = best_no_bid_size
 
-      # Convert ladders to (price, size) tuples ordered worst→best, matching
-      # BracketQuote.ladder_* convention. YES ask ladder is the NO bid ladder
-      # with prices flipped (1 - p), so we reverse direction to keep worst→best.
       yes_bid_ladder = [(float(p), float(s)) for p, s in yes_levels]
       yes_ask_ladder = [(round(1 - float(p), 4), float(s)) for p, s in no_levels]
 
@@ -128,7 +113,6 @@ def fetch_polymarket_events(client: PolymarketClient, city_name: str) -> list[di
     title = event.get("title", "N/A")
     brackets = []
     for mkt in event.get("markets", []):
-      # Polymarket returns outcomePrices as a JSON-encoded string of [yes, no]
       outcome_prices = mkt.get("outcomePrices", "")
       yes_price = None
       if outcome_prices:
@@ -141,8 +125,6 @@ def fetch_polymarket_events(client: PolymarketClient, city_name: str) -> list[di
         except (ValueError, IndexError):
           pass
 
-      # The YES token ID is the first entry of clobTokenIds (also JSON-encoded).
-      # We need it to call the CLOB orderbook endpoint for executable depth.
       yes_token_id = None
       clob_token_ids = mkt.get("clobTokenIds")
       if clob_token_ids:
@@ -155,9 +137,6 @@ def fetch_polymarket_events(client: PolymarketClient, city_name: str) -> list[di
         except (ValueError, IndexError):
           pass
 
-      # Pull executable bid/ask + depth from the CLOB orderbook. Polymarket
-      # returns ladders worst→best (best bid = bids[-1], best ask = asks[-1]),
-      # matching Kalshi's convention.
       best_yes_bid = mkt.get("bestBid")
       best_yes_ask = mkt.get("bestAsk")
       best_yes_bid_size = 0.0
@@ -181,7 +160,6 @@ def fetch_polymarket_events(client: PolymarketClient, city_name: str) -> list[di
                          yes_token_id, exc)
 
       brackets.append({
-        # groupItemTitle is the short bin label ("78-79°F"); fall back to question
         "question": mkt.get("groupItemTitle", mkt.get("question", "?")),
         "condition_id": mkt.get("conditionId"),
         "token_id": yes_token_id,
@@ -214,7 +192,7 @@ def analyze_city(
   poly_client: PolymarketClient,
   nws_client: NWSClient,
 ):
-  """Run the full arbitrage analysis for one city."""
+  """Run the hedged-pair selector for one city across every matched date."""
   print("\n" + "~" * 78)
   print(f"  CITY: {city_name}")
   print("~" * 78)
@@ -224,7 +202,6 @@ def analyze_city(
   station = city_config["station"]
   office, gx, gy = city_config["nws"]
 
-  # Fetch venue data
   logger.info("[%s] Fetching Kalshi events (series=%s)...", city_name, series)
   kalshi_data = fetch_kalshi_events(kalshi_client, series)
   logger.info("[%s] Found %d Kalshi events.", city_name, len(kalshi_data))
@@ -238,9 +215,7 @@ def analyze_city(
     print(f"  No events found for {city_name}.\n")
     return
 
-  # Durable log of every venue snapshot we just fetched. The training jobs
-  # in bin/ read from these rows to refresh the per-city Δ histogram and
-  # detect drift. One row per (city, date, venue) per poll.
+  # Persist every venue snapshot we just fetched.
   for ev in kalshi_data:
     if ev.get("date") and ev.get("brackets"):
       persist.write_snapshot(city_name, ev["date"], "kalshi", ev["brackets"])
@@ -248,7 +223,6 @@ def analyze_city(
     if ev.get("date") and ev.get("brackets"):
       persist.write_snapshot(city_name, ev["date"], "polymarket", ev["brackets"])
 
-  # Cities now share one resolution station per row, so one forecast per date
   logger.info("[%s] Fetching NWS forecasts (station: %s)...", city_name, station)
   forecasts: dict[str, float] = {}
   for date_str in (date for date, _, _ in matched):
@@ -259,151 +233,51 @@ def analyze_city(
   for date, kalshi_event, poly_event in matched:
     forecast_high = forecasts.get(date)
 
-    # Skip dates where one venue has no event yet — comparison is misleading
-    # (the missing venue's column shows 0.0000 across every degree, which
-    # looks like "no signal" rather than "no data"). Polymarket typically
-    # lists 1-2 days further ahead than Kalshi, so this commonly fires for
-    # the furthest-out date.
+    # Both venues must be present — the strategy is a cross-venue pair.
     if not kalshi_event:
-      print(f"\n  [{city_name} — {date}] no Kalshi event yet — skipping comparison.")
+      print(f"\n  [{city_name} — {date}] no Kalshi event yet — skipping.")
       continue
     if not poly_event:
-      print(f"\n  [{city_name} — {date}] no Polymarket event yet — skipping comparison.")
+      print(f"\n  [{city_name} — {date}] no Polymarket event yet — skipping.")
       continue
 
     print("\n" + "#" * 78)
     print(f"  {city_name} — {date}")
     print(f"  Kalshi: {kalshi_event['event_ticker']}")
     print(f"  Polymarket: {poly_event['title']}")
-    print(f"  Resolution station: {station}")
     if forecast_high is not None:
       print(f"  NWS Forecast High: {forecast_high:.0f}°F")
     else:
-      print("  NWS Forecast: not available")
+      print("  NWS Forecast: not available — skipping.")
+      print("#" * 78)
+      continue
     print("#" * 78)
 
-    # Build per-degree distributions for whichever sources are available.
-    # Pass city to forecast_to_distribution so it can apply per-city
-    # calibration from data/forecast_calibration.json (auto-tuned std_dev
-    # and bias from prior settled forecasts; falls back to default 2.0°F).
-    kalshi_dist = parse_kalshi_bins(kalshi_event["brackets"]) if kalshi_event else {}
-    poly_dist = parse_polymarket_bins(poly_event["brackets"]) if poly_event else {}
-    forecast_dist = (
-      forecast_to_distribution(forecast_high, city=city_name)
-      if forecast_high is not None else {}
+    forecast_pdf = forecast_to_distribution(forecast_high)
+    persist.write_forecast(city_name, date, forecast_pdf,
+                           source="nws_normal", std_dev=2.0)
+
+    kalshi_quotes = parse_kalshi_quotes(kalshi_event["brackets"])
+    poly_quotes = parse_polymarket_quotes(poly_event["brackets"])
+
+    pairs = find_hedged_pairs(
+      kalshi_quotes, poly_quotes, forecast_pdf,
+      city=city_name, date=date,
     )
+    display_hedged_pairs(pairs)
 
-    # Persist the forecast PDF so bin/calibrate_forecast.py can later
-    # compare it against the actual settled high.
-    if forecast_dist:
-      persist.write_forecast(city_name, date, forecast_dist,
-                             source="nws_normal", std_dev=2.0)
-
-    source_count = sum([bool(kalshi_dist), bool(poly_dist), bool(forecast_dist)])
-    if source_count < 2:
-      print("  Need at least 2 data sources for comparison. Skipping.\n")
-      continue
-
-    display_comparison(kalshi_dist, poly_dist, forecast_dist)
-
-    # Discrepancies (informational)
-    discrepancies = find_discrepancies(kalshi_dist, poly_dist, forecast_dist)
-    print("=" * 78)
-    print("  DISCREPANCIES (min_edge = 0.05)")
-    print("=" * 78)
-    if discrepancies:
-      for d in discrepancies:
-        sources = ", ".join(d.get("sources_disagreeing", []))
-        print(
-          f"  {d['degree']:>4}°F  |  "
-          f"K={d['kalshi_prob']:.4f}  P={d['poly_prob']:.4f}  F={d['forecast_prob']:.4f}  "
-          f"|  spread={d['max_spread']:.4f}  ({sources})"
-        )
-    else:
-      print("  No significant discrepancies found.")
-
-    # Per-bracket value trades against the forecast PDF (executable prices,
-    # depth-capped sizing). Both venues are scored independently — if both
-    # are mispriced in opposite directions you naturally get one trade per side.
-    if forecast_dist:
-      kalshi_quotes = (
-        parse_kalshi_quotes(kalshi_event["brackets"]) if kalshi_event else []
-      )
-      poly_quotes = (
-        parse_polymarket_quotes(poly_event["brackets"]) if poly_event else []
-      )
-      opportunities = find_value_trades(
-        list(kalshi_quotes) + list(poly_quotes),
-        forecast_pdf=forecast_dist,
-        city=city_name,
-        date=date,
-      )
-    else:
-      opportunities = []
-
-    print("\n" + "=" * 78)
-    print("  VALUE TRADES vs forecast (min_edge = 0.03, fees = 0%)")
-    print("=" * 78)
-    if opportunities:
-      for opp in opportunities:
-        print(
-          f"\n  [{opp.trade_type}] {opp.venue:10s}  {opp.bracket_label}"
-        )
-        print(
-          f"    {opp.action.upper():4s} @ {opp.price:.4f}  "
-          f"(fair={opp.fair_value:.4f}, net edge={opp.net_edge:+.4f}, "
-          f"max size={opp.max_size})"
-        )
-        print(f"    market_id={opp.market_id}")
-        # Persist the recommendation as a 'pending' order. In paper-trading
-        # mode (env PAPER_TRADING=1), strategy/orders.from_opportunity also
-        # records a synthetic fill at intended_price so settle_orders.py can
-        # score it once the market settles. See bin/run_loop.py.
-        try:
-          from_opportunity(opp)
-        except Exception as exc:
-          logger.warning("Failed to log order for %s: %s", opp.market_id, exc)
-    elif not forecast_dist:
-      print("  No forecast available — cannot score value trades.")
-    else:
-      print("  No value trades found above threshold.")
-
-    # ── Paired (cross-venue, opposite-side) arb signals ───────────────
-    # Independent of value trades. These are YES/NO bets across overlapping
-    # brackets; the loss zone is the asymmetric difference of the two
-    # brackets, weighted by the gap-zone risk haircut (default 0.2).
-    if forecast_dist and kalshi_event and poly_event:
-      paired = find_paired_arbitrage(
-        poly_quotes=parse_polymarket_quotes(poly_event["brackets"]),
-        kalshi_quotes=parse_kalshi_quotes(kalshi_event["brackets"]),
-        forecast_pdf=forecast_dist,
-        city=city_name, date=date,
-      )
-      print("\n" + "=" * 78)
-      print("  PAIRED ARB OPPORTUNITIES (gap_zone_risk = 0.2)")
-      print("=" * 78)
-      if paired:
-        for p in paired:
-          print(f"\n  [{p.direction}]")
-          print(f"    Poly  {p.poly_side.upper()} {p.poly_bracket_label:14s} "
-                f"@ {p.poly_price:.4f} (avail {p.poly_size_avail})")
-          print(f"    Kalshi {p.kalshi_side.upper()} {p.kalshi_bracket_label:14s} "
-                f"@ {p.kalshi_price:.4f} (avail {p.kalshi_size_avail})")
-          print(f"    cost/pair={p.cost_per_pair:.4f}  "
-                f"E[payout]={p.expected_payout:.4f}  "
-                f"EV={p.expected_value:+.4f}")
-          print(f"    loss_zone={p.loss_zone_degrees}  "
-                f"P(loss)={p.loss_zone_prob:.4f}  "
-                f"haircut={p.gap_zone_haircut:.4f}  "
-                f"net_edge={p.net_edge:+.4f}  size={p.max_size}")
-      else:
-        print("  No paired arbs found above threshold.")
-
-    print()
+    for pair in pairs:
+      try:
+        orders = from_hedged_pair(pair)
+        for o in orders:
+          execute_order(o)
+      except Exception as exc:
+        logger.warning("Failed to execute hedged pair %s/%s: %s",
+                       pair.kalshi_market_id, pair.poly_market_id, exc)
 
 
 def main():
-  """Run the arbitrage analysis across all configured cities."""
+  """Run the analysis across all configured cities."""
   logger.info("Starting Weather Arbitrage Bot — scanning %d cities...", len(CITIES))
 
   kalshi_client = KalshiClient()

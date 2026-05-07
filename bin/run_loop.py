@@ -14,14 +14,8 @@ let it run. The recursive train→evaluate→improve loop happens automatically:
   2. Once a day at TRAIN_HOUR_UTC, run the training pass:
        a. log_settlements    — pulls newly-settled events from both venues
        b. settle_orders      — scores any filled orders against settlements
-       c. refresh_risk_model — rebuilds per-city Δ histogram from new data
-       d. calibrate_forecast — rebuilds per-city forecast σ/bias from new data
-     The next polling cycle's strategy parameters auto-refresh from the new
-     JSON files (mtime-based cache invalidation in strategy/risk.py and
-     strategy/distributions.py).
-
-  3. Use analysis/edge_calibration.py at any time to inspect realized vs
-     predicted edge per (venue, trade_type, city) bucket.
+     The strategy itself reads the empirical Δ histogram directly from
+     bot.db on every call; no separate refresh step is required.
 
 Start (foreground for testing):
   PAPER_TRADING=1 python -m bin.run_loop
@@ -121,10 +115,8 @@ def setup_logging() -> logging.Logger:
 # ── Daily training pass ──────────────────────────────────────────────────
 
 TRAINING_STEPS = [
-  ("log_settlements",   "bin.log_settlements"),
-  ("settle_orders",     "bin.settle_orders"),
-  ("refresh_risk_model", "bin.refresh_risk_model"),
-  ("calibrate_forecast", "bin.calibrate_forecast"),
+  ("log_settlements", "bin.log_settlements"),
+  ("settle_orders",   "bin.settle_orders"),
 ]
 
 
