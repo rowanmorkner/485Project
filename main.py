@@ -19,7 +19,7 @@ from clients.kalshi import KalshiClient
 from clients.polymarket import PolymarketClient
 from clients.weather import NWSClient
 from strategy.parsers import parse_kalshi_quotes, parse_polymarket_quotes
-from strategy.distributions import forecast_to_distribution
+from strategy.forecasting import get_forecast_pdf
 from strategy.arbitrage import find_hedged_pairs
 from strategy.orders import from_hedged_pair
 from strategy.execution import execute_order
@@ -247,15 +247,15 @@ def analyze_city(
     print(f"  Polymarket: {poly_event['title']}")
     if forecast_high is not None:
       print(f"  NWS Forecast High: {forecast_high:.0f}°F")
-    else:
-      print("  NWS Forecast: not available — skipping.")
+    forecast_pdf, fc_source = get_forecast_pdf(city_name, date, forecast_high)
+    if not forecast_pdf:
+      print("  No forecast available (ensemble + NWS both failed) — skipping.")
       print("#" * 78)
       continue
+    print(f"  Forecast PDF: {fc_source} ({len(forecast_pdf)} bins)")
     print("#" * 78)
 
-    forecast_pdf = forecast_to_distribution(forecast_high)
-    persist.write_forecast(city_name, date, forecast_pdf,
-                           source="nws_normal", std_dev=2.0)
+    persist.write_forecast(city_name, date, forecast_pdf, source=fc_source)
 
     kalshi_quotes = parse_kalshi_quotes(kalshi_event["brackets"])
     poly_quotes = parse_polymarket_quotes(poly_event["brackets"])
