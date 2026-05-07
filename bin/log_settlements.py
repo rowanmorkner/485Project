@@ -56,20 +56,23 @@ log = logging.getLogger(__name__)
 
 def reading_or_none(degrees: list[int], label: str) -> int | None:
   """
-  Return a deterministic integer "reading" for a closed bracket, or None
-  for open-ended brackets ("X or above" / "X or below") which can't pin
-  the venue's reading to a single value.
+  Return a deterministic integer "reading" for a winning bracket.
 
-  We use the LOW edge (min(degrees)) instead of the midpoint. Midpoints
-  with banker's rounding produce systematic ±1°F bias because Kalshi
-  brackets (X° to X+1°) and Polymarket brackets (X-X+1°F) have offset
-  alignments. The low edge is invariant to alignment and gives a stable
-  Δ statistic with bounded artifact (≤ 1°F bracket-alignment noise).
+  Closed brackets ("X° to Y°"): use min(degrees) — the LOW edge is
+  invariant to Kalshi's odd vs Polymarket's even bracket alignment, so
+  midpoint banker's-rounding can't introduce ±1°F bias into the Δ stat.
+
+  Open-ended brackets ("X° or above" / "X° or below"): use the BOUNDARY
+  rather than dropping the row. "88° or above" → 88 (the strict lower
+  bound); "72° or below" → 72 (the strict upper bound). The actual
+  reading may be off by up to TAIL_SPREAD °F, but the boundary is the
+  most conservative single value consistent with the resolution and
+  keeps the (city, date) row in the dataset.
   """
   if not degrees:
     return None
-  if ABOVE_RE.search(label) or BELOW_RE.search(label):
-    return None
+  if BELOW_RE.search(label):
+    return max(degrees)
   return min(degrees)
 
 
