@@ -202,11 +202,17 @@ with tab_live:
     k_brackets, k_ts = data.latest_brackets(city, date, "kalshi")
     p_brackets, p_ts = data.latest_brackets(city, date, "polymarket")
     pdf, fc_source, fc_ts = data.latest_forecast(city, date)
+    k_settle, p_settle = data.settlement_for(city, date)
 
     cap = []
     if k_ts: cap.append(f"Kalshi snapshot: {_humanize_age(k_ts)}")
     if p_ts: cap.append(f"Polymarket snapshot: {_humanize_age(p_ts)}")
     if fc_ts: cap.append(f"Forecast ({fc_source}): {_humanize_age(fc_ts)}")
+    if k_settle is not None or p_settle is not None:
+      bits = []
+      if k_settle is not None: bits.append(f"Kalshi {k_settle}°F")
+      if p_settle is not None: bits.append(f"Polymarket {p_settle}°F")
+      cap.append("Settled: " + " / ".join(bits))
     st.caption("  ·  ".join(cap))
 
     df_k = _bracket_bars(k_brackets, "kalshi")
@@ -250,6 +256,19 @@ with tab_live:
         mode="lines+markers", line=dict(width=3, color="#10B981"),
         marker=dict(size=7),
       ))
+    # Settled-high overlays — vertical lines for past resolutions so the
+    # forecast and venue brackets can be evaluated against the outcome.
+    if k_settle is not None:
+      fig.add_vline(x=k_settle, line_color="#1E3A8A", line_width=2,
+                    annotation_text=f"Kalshi settled {k_settle}°F",
+                    annotation_position="top",
+                    annotation_font_color="#1E3A8A")
+    if p_settle is not None and p_settle != k_settle:
+      fig.add_vline(x=p_settle, line_color="#92400E", line_width=2,
+                    line_dash="dash",
+                    annotation_text=f"Polymarket settled {p_settle}°F",
+                    annotation_position="bottom",
+                    annotation_font_color="#92400E")
     fig.update_layout(
       barmode="overlay",
       xaxis_title="Daily high (°F)",

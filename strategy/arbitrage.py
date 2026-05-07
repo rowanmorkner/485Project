@@ -84,42 +84,34 @@ def find_hedged_pairs(
   if not joint:
     return []
 
-  # Universe of degrees seen across both venues at this snapshot — used to
-  # define the win set for a NO leg.
-  universe = frozenset(
-    d for q in kalshi_quotes for d in q.degrees
-  ) | frozenset(
-    d for q in poly_quotes for d in q.degrees
-  )
-
   fees_per_pair = 2.0 * fee_per_contract  # one fee per leg
   candidates: list[HedgedPair] = []
 
   for kq in kalshi_quotes:
-    k_yes_set = frozenset(kq.degrees)
-    k_no_set = universe - k_yes_set
+    k_yes_pred = kq.yes_predicate()
     for k_side in ("yes", "no"):
       k_fill = walk_ladder_buy(_ask_ladder_for_side(kq, k_side), size)
       if k_fill is None:
         continue
       k_avg, k_cost = k_fill
-      k_win = k_yes_set if k_side == "yes" else k_no_set
+      k_won = (k_yes_pred if k_side == "yes"
+               else (lambda k, _y=k_yes_pred: not _y(k)))
 
       for pq in poly_quotes:
-        p_yes_set = frozenset(pq.degrees)
-        p_no_set = universe - p_yes_set
+        p_yes_pred = pq.yes_predicate()
         for p_side in ("yes", "no"):
           p_fill = walk_ladder_buy(_ask_ladder_for_side(pq, p_side), size)
           if p_fill is None:
             continue
           p_avg, p_cost = p_fill
-          p_win = p_yes_set if p_side == "yes" else p_no_set
+          p_won = (p_yes_pred if p_side == "yes"
+                   else (lambda p, _y=p_yes_pred: not _y(p)))
 
           # Cost & payoff are per-pair (one Kalshi + one Polymarket contract)
           cost_per_pair = k_avg + p_avg + fees_per_pair
 
-          def payoff_fn(k: int, p: int, kw=k_win, pw=p_win) -> float:
-            return float(k in kw) + float(p in pw)
+          def payoff_fn(k: int, p: int, kw=k_won, pw=p_won) -> float:
+            return float(kw(k)) + float(pw(p))
 
           ev = expected_payoff(payoff_fn, joint)
           q05 = quantile_payoff(payoff_fn, joint, q=0.05)
@@ -138,12 +130,18 @@ def find_hedged_pairs(
             kalshi_degrees=list(kq.degrees),
             kalshi_side=k_side,
             kalshi_avg_fill=round(k_avg, 4),
+            kalshi_tail_below=kq.tail_below,
+            kalshi_tail_above=kq.tail_above,
+            kalshi_boundary=kq.boundary,
             poly_market_id=pq.market_id,
             poly_condition_id=pq.condition_id,
             poly_label=pq.label,
             poly_degrees=list(pq.degrees),
             poly_side=p_side,
             poly_avg_fill=round(p_avg, 4),
+            poly_tail_below=pq.tail_below,
+            poly_tail_above=pq.tail_above,
+            poly_boundary=pq.boundary,
             size=size,
             cost_per_pair=round(cost_per_pair, 4),
             expected_payoff=round(ev, 4),
