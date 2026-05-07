@@ -1,0 +1,162 @@
+[
+  {
+    "city": "Miami",
+    "ts": "2026-05-06T01:41:22+00:00",
+    "primary_venue": "kalshi",
+    "primary_label": "86\u00b0 to 87\u00b0",
+    "primary_degrees": [
+      86,
+      87
+    ],
+    "primary_side": "yes_long",
+    "primary_entry": 0.1,
+    "primary_gap": 0.12829957576593312,
+    "hedge_venue": "polymarket",
+    "hedge_label": "84-85\u00b0F",
+    "hedge_degrees": [
+      84,
+      85
+    ],
+    "hedge_side": "no_long",
+    "hedge_entry": 0.924452,
+    "size": 25,
+    "total_entry_cost": 25.611300000000004,
+    "expected_pnl": 0.590311648988787,
+    "q05_pnl": -0.8613000000000013,
+    "delta_src": "per_city_n=61"
+  },
+  {
+    "city": "LA",
+    "ts": "2026-05-06T04:21:31+00:00",
+    "primary_venue": "kalshi",
+    "primary_label": "72\u00b0 or above",
+    "primary_degrees": [
+      72,
+      73,
+      74,
+      75,
+      76,
+      77
+    ],
+    "primary_side": "yes_long",
+    "primary_entry": 0.0424,
+    "primary_gap": 0.16014343846957388,
+    "hedge_venue": "polymarket",
+    "hedge_label": "72-73\u00b0F",
+    "hedge_degrees": [
+      72,
+      73
+    ],
+    "hedge_side": "no_long",
+    "hedge_entry": 0.925,
+    "size": 25,
+    "total_entry_cost": 24.185000000000002,
+    "expected_pnl": 2.0458741940034857,
+    "q05_pnl": 0.5649999999999988,
+    "delta_src": "per_city_n=31"
+  },
+  {
+    "city": "Austin",
+    "ts": "2026-05-06T03:11:37+00:00",
+    "primary_venue": "polymarket",
+    "primary_label": "84-85\u00b0F",
+    "primary_degrees": [
+      84,
+      85
+    ],
+    "primary_side": "yes_long",
+    "primary_entry": 0.10220400000000002,
+    "primary_gap": 0.10419075337883044,
+    "hedge_venue": "kalshi",
+    "hedge_label": "86\u00b0 to 87\u00b0",
+    "hedge_degrees": [
+      86,
+      87
+    ],
+    "hedge_side": "no_long",
+    "hedge_entry": 0.91,
+    "size": 25,
+    "total_entry_cost": 25.305100000000003,
+    "expected_pnl": 0.71775123435347,
+    "q05_pnl": -0.5551000000000013,
+    "delta_src": "pooled_n=188_(city_n=18)"
+  },
+  {
+    "city": "San Francisco",
+    "ts": "2026-05-06T03:36:45+00:00",
+    "primary_venue": "polymarket",
+    "primary_label": "66-67\u00b0F",
+    "primary_degrees": [
+      66,
+      67
+    ],
+    "primary_side": "yes_long",
+    "primary_entry": 0.10664000000000001,
+    "primary_gap": 0.0796817510890305,
+    "hedge_venue": "kalshi",
+    "hedge_label": "67\u00b0 to 68\u00b0",
+    "hedge_degrees": [
+      67,
+      68
+    ],
+    "hedge_side": "no_long",
+    "hedge_entry": 0.884,
+    "size": 25,
+    "total_entry_cost": 24.766,
+    "expected_pnl": 0.9367411771903187,
+    "q05_pnl": -0.01600000000000179,
+    "delta_src": "pooled_n=188_(city_n=29)"
+  },
+  {
+    "city": "San Francisco",
+    "ts": "2026-05-06T06:46:53+00:00",
+    "primary_venue": "polymarket",
+    "primary_label": "68-69\u00b0F",
+    "primary_degrees": [
+      68,
+      69
+    ],
+    "primary_side": "yes_long",
+    "primary_entry": 0.040353599999999996,
+    "primary_gap": 0.051364205256570726,
+    "hedge_venue": "kalshi",
+    "hedge_label": "69\u00b0 to 70\u00b0",
+    "hedge_degrees": [
+      69,
+      70
+    ],
+    "hedge_side": "no_long",
+    "hedge_entry": 0.95,
+    "size": 25,
+    "total_entry_cost": 24.75884,
+    "expected_pnl": 0.6122273814626906,
+    "q05_pnl": -0.008839999999998849,
+    "delta_src": "pooled_n=188_(city_n=29)"
+  },
+  {
+    "city": "Seattle",
+    "ts": "2026-05-06T13:31:58+00:00",
+    "primary_venue": "polymarket",
+    "primary_label": "68-69\u00b0F",
+    "primary_degrees": [
+      68,
+      69
+    ],
+    "primary_side": "yes_long",
+    "primary_entry": 0.011,
+    "primary_gap": 0.08893672537508153,
+    "hedge_venue": "kalshi",
+    "hedge_label": "69\u00b0 to 70\u00b0",
+    "hedge_degrees": [
+      69,
+      70
+    ],
+    "hedge_side": "no_long",
+    "hedge_entry": 0.95,
+    "size": 25,
+    "total_entry_cost": 24.025,
+    "expected_pnl": 1.585009260734788,
+    "q05_pnl": 0.7250000000000012,
+    "delta_src": "per_city_n=49"
+  }
+]

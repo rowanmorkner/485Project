@@ -1,0 +1,238 @@
+{
+  "strategy_name": "late_day_certainty",
+  "iterations": [
+    {
+      "version": "baseline_all_day",
+      "n_trades": 15,
+      "n_winners": 15,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 126.4123,
+      "avg_pnl_per_trade": 8.4275,
+      "median_pnl_per_trade": 3.3155,
+      "sharpe_per_trade": 0.5743,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 15
+      },
+      "worst_case_pnl_dollars": 40.3217,
+      "q05_pnl_dollars": -409.6783,
+      "expected_pnl_pdf_dollars": 139.8828,
+      "notes": "Baseline replication of S3 selection logic with joint K-P expected/q05 PnL columns. Hold-to-settle scoring. No late-day filter."
+    },
+    {
+      "version": "v1_fixed_window_30",
+      "n_trades": 1,
+      "n_winners": 1,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 87.6123,
+      "avg_pnl_per_trade": 87.6123,
+      "median_pnl_per_trade": 87.6123,
+      "sharpe_per_trade": 0.0,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 1
+      },
+      "worst_case_pnl_dollars": 48.95,
+      "q05_pnl_dollars": 48.95,
+      "expected_pnl_pdf_dollars": 87.6228,
+      "fixed_window_size": 30,
+      "notes": "Only enter during last 30 alive-snapshot window before per-city book death. Hold-to-settle scoring under joint K-P distribution."
+    },
+    {
+      "version": "v2_threshold_0.6",
+      "n_trades": 10,
+      "n_winners": 9,
+      "win_rate": 0.9,
+      "total_pnl_dollars": 164.6681,
+      "avg_pnl_per_trade": 16.4668,
+      "median_pnl_per_trade": 12.241,
+      "sharpe_per_trade": 0.8205,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 10
+      },
+      "worst_case_pnl_dollars": 79.5289,
+      "q05_pnl_dollars": -220.4711,
+      "expected_pnl_pdf_dollars": 179.0861,
+      "certainty_threshold": 0.6,
+      "threshold_sweep": [
+        {
+          "threshold": 0.3,
+          "n_trades": 15,
+          "winners": 15,
+          "worst_case_pnl": 30.1936,
+          "expected_pnl_joint": 116.2842,
+          "q05_pnl": -419.8064,
+          "sharpe": 0.5228
+        },
+        {
+          "threshold": 0.35,
+          "n_trades": 15,
+          "winners": 14,
+          "worst_case_pnl": 24.9386,
+          "expected_pnl_joint": 111.0292,
+          "q05_pnl": -425.0614,
+          "sharpe": 0.4925
+        },
+        {
+          "threshold": 0.4,
+          "n_trades": 14,
+          "winners": 13,
+          "worst_case_pnl": 41.4462,
+          "expected_pnl_joint": 130.6526,
+          "q05_pnl": -358.5538,
+          "sharpe": 0.6293
+        },
+        {
+          "threshold": 0.45,
+          "n_trades": 10,
+          "winners": 9,
+          "worst_case_pnl": 54.0719,
+          "expected_pnl_joint": 139.2112,
+          "q05_pnl": -245.9281,
+          "sharpe": 0.7697
+        },
+        {
+          "threshold": 0.5,
+          "n_trades": 10,
+          "winners": 9,
+          "worst_case_pnl": 33.9783,
+          "expected_pnl_joint": 119.1176,
+          "q05_pnl": -266.0217,
+          "sharpe": 0.642
+        },
+        {
+          "threshold": 0.55,
+          "n_trades": 10,
+          "winners": 9,
+          "worst_case_pnl": 71.4516,
+          "expected_pnl_joint": 156.5909,
+          "q05_pnl": -228.5484,
+          "sharpe": 0.8234
+        },
+        {
+          "threshold": 0.6,
+          "n_trades": 10,
+          "winners": 9,
+          "worst_case_pnl": 79.5289,
+          "expected_pnl_joint": 164.6681,
+          "q05_pnl": -220.4711,
+          "sharpe": 0.8205
+        },
+        {
+          "threshold": 0.65,
+          "n_trades": 10,
+          "winners": 8,
+          "worst_case_pnl": 79.297,
+          "expected_pnl_joint": 164.4363,
+          "q05_pnl": -220.703,
+          "sharpe": 0.8038
+        },
+        {
+          "threshold": 0.7,
+          "n_trades": 6,
+          "winners": 5,
+          "worst_case_pnl": 42.8248,
+          "expected_pnl_joint": 119.5556,
+          "q05_pnl": -57.1752,
+          "sharpe": 0.7084
+        },
+        {
+          "threshold": 0.75,
+          "n_trades": 5,
+          "winners": 4,
+          "worst_case_pnl": 35.0386,
+          "expected_pnl_joint": 115.581,
+          "q05_pnl": -14.9614,
+          "sharpe": 0.728
+        },
+        {
+          "threshold": 0.8,
+          "n_trades": 2,
+          "winners": 1,
+          "worst_case_pnl": 39.482,
+          "expected_pnl_joint": 74.2549,
+          "q05_pnl": -10.518,
+          "sharpe": 0.6401
+        }
+      ],
+      "notes": "Adaptive certainty threshold. Score = 0.30*spread + 0.40*conc + 0.20*alive + 0.10*time. Picked best threshold by expected PnL under joint K-P. Hold-to-settle scoring."
+    },
+    {
+      "version": "v3_threshold_0.6_q05_0.1",
+      "n_trades": 4,
+      "n_winners": 4,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 113.0623,
+      "avg_pnl_per_trade": 28.2656,
+      "median_pnl_per_trade": 28.9107,
+      "sharpe_per_trade": 1.1746,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 4
+      },
+      "worst_case_pnl_dollars": 28.6305,
+      "q05_pnl_dollars": 28.6305,
+      "expected_pnl_pdf_dollars": 106.1207,
+      "certainty_threshold": 0.6,
+      "min_q05": 0.1,
+      "min_q05_sweep": [
+        {
+          "min_q05": -0.1,
+          "n_trades": 4,
+          "winners": 4,
+          "worst": 20.1391,
+          "exp": 104.5709,
+          "q05": 20.1391,
+          "rejects": 41
+        },
+        {
+          "min_q05": -0.05,
+          "n_trades": 4,
+          "winners": 4,
+          "worst": 20.1391,
+          "exp": 104.5709,
+          "q05": 20.1391,
+          "rejects": 41
+        },
+        {
+          "min_q05": 0.0,
+          "n_trades": 4,
+          "winners": 4,
+          "worst": 20.1391,
+          "exp": 104.5709,
+          "q05": 20.1391,
+          "rejects": 41
+        },
+        {
+          "min_q05": 0.05,
+          "n_trades": 4,
+          "winners": 4,
+          "worst": 20.1391,
+          "exp": 104.5709,
+          "q05": 20.1391,
+          "rejects": 97
+        },
+        {
+          "min_q05": 0.1,
+          "n_trades": 4,
+          "winners": 4,
+          "worst": 28.6305,
+          "exp": 113.0623,
+          "q05": 28.6305,
+          "rejects": 116
+        }
+      ],
+      "rejects": 116,
+      "notes": "Same as v2 plus a probabilistic-worst-case (q05) risk filter computed under the joint K-P distribution. Filters out pairs where 5%-tail payout is below entry cost + min_q05."
+    }
+  ]
+}

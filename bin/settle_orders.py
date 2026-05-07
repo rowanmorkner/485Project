@@ -84,7 +84,9 @@ def main():
         log.warning("Order %d: failed to parse opp_json", o["id"])
         continue
 
-      won = high in bracket_degrees
+      # YES side wins iff actual ∈ bracket; NO side wins iff actual ∉ bracket.
+      in_bracket = high in bracket_degrees
+      won = in_bracket if o["side"] == "yes" else not in_bracket
 
       # Sum across all fills for this order (multi-fill safe)
       fills = conn.execute(
