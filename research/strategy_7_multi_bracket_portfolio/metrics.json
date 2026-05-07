@@ -1,0 +1,109 @@
+{
+  "strategy_name": "multi_bracket_portfolio_hedges",
+  "cities": [
+    "Miami",
+    "LA",
+    "Austin",
+    "San Francisco",
+    "Seattle"
+  ],
+  "date": "2026-05-06",
+  "pair_size": 50,
+  "max_legs_per_side": 2,
+  "fee_per_contract": 0.005,
+  "safety_buffer_per_pair": 0.05,
+  "iterations": [
+    {
+      "version": "v1",
+      "n_trades": 0,
+      "n_winners": 0,
+      "win_rate": 0.0,
+      "total_pnl_dollars": 0.0,
+      "total_pnl_worst_case": 0.0,
+      "total_pnl_q05": 0.0,
+      "avg_pnl_per_trade": 0.0,
+      "median_pnl_per_trade": 0.0,
+      "sharpe_per_trade": 0.0,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {},
+      "raw_signal_count": 576293,
+      "per_city": {
+        "Miami": 0,
+        "LA": 0,
+        "Austin": 0,
+        "San Francisco": 0,
+        "Seattle": 0
+      },
+      "n_multi_trades": 0,
+      "n_legs_distribution": {},
+      "notes": "Strict worst-case structural multi-bracket hedge. Worst-case PnL/pair >= $0.05 over the JOINT (K, P) support (using `joint_kp_distribution` = NWS PDF \u00d7 empirical \u0394 histogram). Allows up to 2 legs per venue. Hold-to-settle scoring; entry fees only."
+    },
+    {
+      "version": "v2",
+      "n_trades": 963,
+      "n_winners": 0,
+      "win_rate": 0.0,
+      "total_pnl_dollars": 15798.7643,
+      "total_pnl_worst_case": -48899.875,
+      "total_pnl_q05": 5550.125,
+      "avg_pnl_per_trade": 16.4058,
+      "median_pnl_per_trade": 14.3166,
+      "sharpe_per_trade": 1.2151,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 963
+      },
+      "raw_signal_count": 576293,
+      "per_city": {
+        "Miami": 0,
+        "LA": 466,
+        "Austin": 4,
+        "San Francisco": 151,
+        "Seattle": 342
+      },
+      "n_multi_trades": 893,
+      "n_legs_distribution": {
+        "1x1": 70,
+        "1x2": 649,
+        "2x1": 244
+      },
+      "notes": "CVaR-bounded EV: q05 PnL/pair > 0 AND expected PnL/pair > $0.05. Loosens v1 to permit small-probability tail losses while keeping a positive-EV cushion. Otherwise same multi-bracket portfolio search."
+    },
+    {
+      "version": "v3",
+      "n_trades": 893,
+      "n_winners": 0,
+      "win_rate": 0.0,
+      "total_pnl_dollars": 14981.5696,
+      "total_pnl_worst_case": -45424.6707,
+      "total_pnl_q05": 5125.3296,
+      "avg_pnl_per_trade": 16.7767,
+      "median_pnl_per_trade": 14.4962,
+      "sharpe_per_trade": 1.2284,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 893
+      },
+      "raw_signal_count": 576293,
+      "per_city": {
+        "Miami": 0,
+        "LA": 429,
+        "Austin": 4,
+        "San Francisco": 136,
+        "Seattle": 324
+      },
+      "n_multi_trades": 893,
+      "n_legs_distribution": {
+        "1x2": 649,
+        "2x1": 244
+      },
+      "notes": "v2's selection minus any portfolio reducible to a single Kalshi leg + single Polymarket leg matching S3 v2's universe. Reports the *additive* trades available only via multi-bracket combinations."
+    }
+  ]
+}
