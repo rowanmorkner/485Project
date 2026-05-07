@@ -1,0 +1,128 @@
+{
+  "strategy_name": "joint_distribution_structural_arb",
+  "diagnostics": {
+    "pooled_divergence_hist": {
+      "1": 0.3723404255319149,
+      "-1": 0.09574468085106383,
+      "0": 0.2553191489361702,
+      "2": 0.22872340425531915,
+      "3": 0.0425531914893617,
+      "4": 0.005319148936170213
+    },
+    "s3_v2_overlap": {
+      "n_s3_v2": 15,
+      "n_v3": 130,
+      "n_v4": 111,
+      "s3_v2_surviving_v3": 0,
+      "s3_v2_surviving_v4": 0,
+      "s3_v2_dropped_by_v3": 15
+    }
+  },
+  "iterations": [
+    {
+      "version": "v1",
+      "n_trades": 15,
+      "n_winners": 15,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 139.8828,
+      "avg_pnl_per_trade": 9.3255,
+      "median_pnl_per_trade": 2.3795,
+      "sharpe_per_trade": 0.6843,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 15
+      },
+      "raw_signal_count": 1593,
+      "joint_expected_total_pnl": 126.4123,
+      "joint_q05_total_pnl": -409.6783,
+      "s3_worst_case_total_pnl": 40.3217,
+      "notes": "Naive S3 replication: structural (loss zone empty) under K=P assumption AND cost < $1. PnL scored using S3's expected-payout (NWS PDF, K=P) for direct comparison. Joint E[PnL] / joint q05 PnL / S3-worst fields show the same trades scored under the joint K-P distribution \u2014 this exposes the venue-divergence risk hiding inside S3's $40 worst-case."
+    },
+    {
+      "version": "v2",
+      "n_trades": 607,
+      "n_winners": 607,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 4408.3397,
+      "avg_pnl_per_trade": 7.2625,
+      "median_pnl_per_trade": 4.2377,
+      "sharpe_per_trade": 1.1504,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 607
+      },
+      "raw_signal_count": 84164,
+      "joint_expected_total_pnl": 4408.3397,
+      "joint_q05_total_pnl": -11344.5328,
+      "s3_worst_case_total_pnl": -18044.5327,
+      "notes": "Joint-EV filter: accept pair if E[payout] under P(K_high,P_high) exceeds entry cost + $0.05/pair safety margin. Drops S3's structural requirement; scoring uses NWS PDF for P(K) and empirical \u0394 histogram for P(P|K). Pure forecast-EV bet \u2014 no worst-case floor."
+    },
+    {
+      "version": "v3",
+      "n_trades": 130,
+      "n_winners": 88,
+      "win_rate": 0.6769,
+      "total_pnl_dollars": 790.6394,
+      "avg_pnl_per_trade": 6.0818,
+      "median_pnl_per_trade": 2.0332,
+      "sharpe_per_trade": 0.6399,
+      "max_drawdown_dollars": -17.0667,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 130
+      },
+      "raw_signal_count": 15511,
+      "joint_expected_total_pnl": 790.6394,
+      "joint_q05_total_pnl": 409.9135,
+      "s3_worst_case_total_pnl": -6390.0865,
+      "notes": "CVaR filter: accept pair only if 5th-percentile payout under joint K-P > entry cost. This is the production-grade replacement for S3's 'venues agree' worst case. Scoring uses joint expected payout. Per-city \u0394 histograms (n\u224830-90) noisy; documented approximation P(\u0394|K) \u2248 P(\u0394)."
+    },
+    {
+      "version": "v4",
+      "n_trades": 111,
+      "n_winners": 76,
+      "win_rate": 0.6847,
+      "total_pnl_dollars": 609.0491,
+      "avg_pnl_per_trade": 5.4869,
+      "median_pnl_per_trade": 2.0512,
+      "sharpe_per_trade": 0.7107,
+      "max_drawdown_dollars": -18.0163,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 111
+      },
+      "raw_signal_count": 13251,
+      "joint_expected_total_pnl": 609.0491,
+      "joint_q05_total_pnl": 365.5687,
+      "s3_worst_case_total_pnl": -5334.4313,
+      "notes": "v3 + asymmetric directional preference. Kalshi reads +1\u00b0F warmer on average, so prefer hedges where Kalshi long is on the high side (yes_long+yes_long: K bracket \u2265 P bracket; no_long+no_long: P bracket \u2265 K bracket). Mixed/aligned-bracket pairs get no asymmetry penalty."
+    },
+    {
+      "version": "v5",
+      "n_trades": 14,
+      "n_winners": 10,
+      "win_rate": 0.7143,
+      "total_pnl_dollars": 38.2957,
+      "avg_pnl_per_trade": 2.7354,
+      "median_pnl_per_trade": 0.7862,
+      "sharpe_per_trade": 0.4567,
+      "max_drawdown_dollars": -1.5048,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 14
+      },
+      "raw_signal_count": 15511,
+      "joint_expected_total_pnl": 38.2957,
+      "joint_q05_total_pnl": 44.6742,
+      "s3_worst_case_total_pnl": -905.3258,
+      "notes": "v3 CVaR filter + strict per-leg dedup: each (city, K_ticker, K_side) and each (city, P_token, P_side) is opened at most once across the day. Avoids double-counting the same Kalshi leg paired with multiple Polymarket brackets \u2014 capital-realistic accounting."
+    }
+  ]
+}

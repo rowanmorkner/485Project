@@ -1,0 +1,59 @@
+Historical K-P signed diff distribution (n=188):
+  K-P=-1: 18 (9.6%)
+  K-P=+0: 48 (25.5%)
+  K-P=+1: 70 (37.2%)
+  K-P=+2: 43 (22.9%)
+  K-P=+3: 8 (4.3%)
+  K-P=+4: 1 (0.5%)
+
+Pr(K=P) = 25.53%  (we get $1 cleanly)
+Pr(|K-P|>=1) = 74.47%
+
+Per-trade hedged-pair settlement-risk simulation:
+  (anchoring K_high to bracket center; varying P_high by historical diff)
+
+  Miami          kalshi      long, polymarket  short bracket=[84, 85]
+    entry_cost=$23.96  fees=$0.50
+    payoff dist: {2.0: 192, 1.0: 184}
+    avg p&l $+13.30, win rate 100.0%, bad-loss rate (<-$10) 0.0%
+
+  Miami          kalshi      long, polymarket  short bracket=[86, 87]
+    entry_cost=$20.00  fees=$0.50
+    payoff dist: {2.0: 192, 1.0: 184}
+    avg p&l $+17.27, win rate 100.0%, bad-loss rate (<-$10) 0.0%
+
+  Miami          polymarket  long, kalshi      short bracket=[88, 89]
+    entry_cost=$23.18  fees=$0.50
+    payoff dist: {0.0: 192, 1.0: 184}
+    avg p&l $-11.45, win rate 48.9%, bad-loss rate (<-$10) 51.1%
+
+  Miami          polymarket  long, kalshi      short bracket=[90, 91]
+    entry_cost=$20.62  fees=$0.50
+    payoff dist: {0.0: 192, 1.0: 184}
+    avg p&l $-8.89, win rate 48.9%, bad-loss rate (<-$10) 51.1%
+
+  LA             kalshi      long, polymarket  short bracket=[66, 67]
+    entry_cost=$20.71  fees=$0.50
+    payoff dist: {2.0: 192, 1.0: 184}
+    avg p&l $+16.55, win rate 100.0%, bad-loss rate (<-$10) 0.0%
+
+  LA             polymarket  long, kalshi      short bracket=[70, 71]
+    entry_cost=$21.75  fees=$0.50
+    payoff dist: {0.0: 192, 1.0: 184}
+    avg p&l $-10.02, win rate 48.9%, bad-loss rate (<-$10) 51.1%
+
+  LA             polymarket  long, kalshi      short bracket=[68, 69]
+    entry_cost=$23.32  fees=$0.50
+    payoff dist: {0.0: 192, 1.0: 184}
+    avg p&l $-11.58, win rate 48.9%, bad-loss rate (<-$10) 51.1%
+
+  LA             kalshi      long, polymarket  short bracket=[68, 69]
+    entry_cost=$23.50  fees=$0.50
+    payoff dist: {2.0: 192, 1.0: 184}
+    avg p&l $+13.77, win rate 100.0%, bad-loss rate (<-$10) 0.0%
+
+  Austin         polymarket  long, kalshi      short bracket=[86, 87]
+    entry_cost=$23.58  fees=$0.50
+    payoff dist: {0.0: 192, 1.0: 184}
+    avg p&l $-11.85, win rate 48.9%, bad-loss rate (<-$10) 51.1%
+

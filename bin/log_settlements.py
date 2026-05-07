@@ -3,9 +3,9 @@ Daily cron job: pull every recently-settled (city, date) market from both
 Kalshi and Polymarket, extract the winning bracket on each side, and write
 the implied "venue reading" to the settlements table.
 
-This is the data-acquisition half of Component 2. The companion job
-bin/refresh_risk_model.py reads from the settlements table and rebuilds
-the per-city Δ histogram used by strategy/risk.py.
+The strategy reads the per-city Δ histogram directly from this table on
+every call to strategy.arbitrage.find_hedged_pairs (no separate refresh
+step needed).
 
 Reading extraction rules:
   - Narrow brackets (e.g. Kalshi "85° to 86°", Polymarket "84-85°F"):
@@ -36,8 +36,7 @@ from clients.kalshi import KalshiClient
 from clients.polymarket import PolymarketClient
 from config import CITIES
 from persistence import db
-# Reuse the proven settlement-fetching helpers from the backtest module
-from backtests.run_settlement_backtest import (
+from bin._settlement_fetchers import (
   fetch_all_settled_kalshi_events,
   fetch_all_closed_weather_events,
   kalshi_event_date,

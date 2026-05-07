@@ -1,0 +1,112 @@
+{
+  "strategy_name": "cross_venue_convergence",
+  "iterations": [
+    {
+      "version": "v1",
+      "n_trades": 9,
+      "n_winners": 1,
+      "win_rate": 0.1111111111111111,
+      "total_pnl_dollars": -10.667,
+      "avg_pnl_per_trade": -1.185222,
+      "median_pnl_per_trade": -0.75,
+      "sharpe_per_trade": -1.0957,
+      "max_drawdown_dollars": -10.667,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "end_of_window": 3,
+        "target": 4,
+        "time_stop": 2
+      },
+      "notes": "UNHEDGED directional buy on cheap-side YES (single leg); identical-bracket alignment only; gap >=5c; exit when gap halves or 2h time stop; size=25; fee=0.005/contract. BASELINE: convergence is bidirectional, so directional bet exposed."
+    },
+    {
+      "version": "v2",
+      "n_trades": 24,
+      "n_winners": 4,
+      "win_rate": 0.16666666666666666,
+      "total_pnl_dollars": -11.9652,
+      "avg_pnl_per_trade": -0.49855,
+      "median_pnl_per_trade": -0.44,
+      "sharpe_per_trade": -0.4806,
+      "max_drawdown_dollars": -12.8545,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "end_of_window": 4,
+        "target": 8,
+        "time_stop": 12
+      },
+      "notes": "UNHEDGED; per-degree PDF probability gap (sums rival PDF over this bracket's degrees -- handles partial overlap brackets like Kalshi tails vs Polymarket 2-deg bins). depth_min=50 contracts on best bid."
+    },
+    {
+      "version": "v3",
+      "n_trades": 9,
+      "n_winners": 3,
+      "win_rate": 0.3333333333333333,
+      "total_pnl_dollars": -11.9919,
+      "avg_pnl_per_trade": -1.332433,
+      "median_pnl_per_trade": -1.33,
+      "sharpe_per_trade": -0.6262,
+      "max_drawdown_dollars": -11.9919,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "time_stop": 7,
+        "target": 2
+      },
+      "notes": "HEDGED pair: long YES cheap-side + long NO rich-side. Exit when combined bid-side close-proceeds clear 2c/pair profit post-fee, OR 4h time stop, OR end-of-window. NO mid-fallback (if a leg goes no-bid, that leg's exit value = 0)."
+    },
+    {
+      "version": "v4",
+      "n_trades": 9,
+      "n_winners": 8,
+      "win_rate": 0.8888888888888888,
+      "total_pnl_dollars": 20.3296,
+      "avg_pnl_per_trade": 2.258844,
+      "median_pnl_per_trade": 1.7315,
+      "sharpe_per_trade": 1.1558,
+      "max_drawdown_dollars": -0.5376,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "end_of_window": 9
+      },
+      "notes": "HEDGED hold-to-end-of-window. Cost cap 1.0/pair. Mid-fallback: if a leg's bid book dies before EOW, value = last observable mid * size. Approximates hold-to-settle EV but assumes mid is unbiased and venues agree on settlement (historically only ~26% of pairs agreed)."
+    },
+    {
+      "version": "v5",
+      "n_trades": 9,
+      "n_winners": 9,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 23.1107,
+      "avg_pnl_per_trade": 2.567856,
+      "median_pnl_per_trade": 2.4085,
+      "sharpe_per_trade": 1.5053,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "end_of_window": 9
+      },
+      "notes": "HEDGED hold-to-EOW with strict 0.97 cost cap. Entry-cost cap means we only enter when there is at-entry edge >= 3c per pair PRE-exit. Same caveats: assumes both venues settle on same daily high."
+    },
+    {
+      "version": "v6",
+      "n_trades": 9,
+      "n_winners": 9,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 23.1107,
+      "avg_pnl_per_trade": 2.567856,
+      "median_pnl_per_trade": 2.4085,
+      "sharpe_per_trade": 1.5053,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "end_of_window": 9
+      },
+      "notes": "Same as v5 but mid-fallback OFF. If a leg has no bid book at exit, that leg yields $0 -- pessimistic. Shows the impact of the mid-fallback assumption (i.e., how much of v5's pnl depends on it)."
+    }
+  ]
+}

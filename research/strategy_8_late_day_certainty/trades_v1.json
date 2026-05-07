@@ -1,0 +1,21 @@
+[
+  {
+    "city": "Seattle",
+    "entry_ts": "2026-05-07T03:07:10+00:00",
+    "snap_idx": 327,
+    "certainty": 0.968,
+    "kalshi_ticker": "KXHIGHTSEA-26MAY06-T69",
+    "kalshi_label": "68\u00b0 or below",
+    "kalshi_side": "no_long",
+    "poly_token": "1614354525277665",
+    "poly_label": "61\u00b0F or below",
+    "poly_side": "no_long",
+    "pair_size": 50,
+    "entry_cost_per_pair": 0.011,
+    "worst_case_pnl": 48.95,
+    "expected_pnl_pdf": 87.6228,
+    "expected_pnl_joint": 87.6123,
+    "q05_pnl_joint": 48.95,
+    "structural": true
+  }
+]
