@@ -375,17 +375,20 @@ with tab_perf:
 
 with tab_back:
   bt = data.backtest_frame()
+  skipped = data.backtest_skipped_count()
   if bt.empty:
     st.info(
-      "No backtest results yet. Run `python -m bin.backtest_strategy` "
-      "to replay the strategy against historical snapshots.")
+      "No backtest results with real settlements yet. Run "
+      "`python -m bin.backtest_strategy` to replay the strategy "
+      "against historical snapshots once both venues settle.")
   else:
     st.caption(
       "Replays `find_hedged_pairs` at every paired snapshot through each "
-      "(city, date), with per-leg dedup mirroring live behaviour. "
-      "Closes resolve against actual settlements where available; "
-      "otherwise the highest-probability bracket in the day's final "
-      "snapshot is used as a synthetic close.")
+      "(city, date), with per-leg dedup mirroring live behaviour. Only "
+      "pairs scored against REAL venue settlements on both legs are "
+      "shown — synthetic-close rows are excluded since they're "
+      "structurally biased against the strategy."
+      + (f" {skipped} pair(s) skipped." if skipped else ""))
 
     total = bt["realized_total"].sum()
     n = len(bt)

@@ -199,12 +199,32 @@ BACKTEST_PATH = PROJECT_ROOT / "data" / "backtest_results.parquet"
 
 
 @st.cache_data(ttl=30)
-def backtest_frame() -> pd.DataFrame:
-  """Replayed strategy results from bin/backtest_strategy.py. Returns an
-  empty DataFrame if the parquet hasn't been generated yet."""
+def backtest_frame(settled_only: bool = True) -> pd.DataFrame:
+  """Replayed strategy results from bin/backtest_strategy.py.
+
+  Synthetic-close rows (those without real settlements on both venues)
+  are dropped by default — synthetic closes use the highest-probability
+  bracket from the final snapshot as a proxy, which is structurally
+  biased against the strategy (it bets when it disagrees with venue
+  consensus, and synthetic closes ARE venue consensus). Returns an
+  empty DataFrame if the parquet hasn't been generated yet.
+  """
   if not BACKTEST_PATH.exists():
     return pd.DataFrame()
   df = pd.read_parquet(BACKTEST_PATH)
   if "snapshot_ts" in df.columns:
     df["snapshot_ts"] = pd.to_datetime(df["snapshot_ts"])
+  if settled_only and "outcome_source" in df.columns:
+    df = df[df["outcome_source"] == "settled"].reset_index(drop=True)
   return df
+
+
+@st.cache_data(ttl=30)
+def backtest_skipped_count() -> int:
+  """How many pairs were dropped by the settled-only filter."""
+  if not BACKTEST_PATH.exists():
+    return 0
+  df = pd.read_parquet(BACKTEST_PATH)
+  if "outcome_source" not in df.columns:
+    return 0
+  return int((df["outcome_source"] != "settled").sum())
