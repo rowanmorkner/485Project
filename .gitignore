@@ -52,6 +52,10 @@ Thumbs.db
 # Runtime data (SQLite db, cached params, fills)
 data/
 backtests/_cache/
+bin/_cache/
 
 # Bot logs (rotated daily)
 logs/
+
+# Screenshots / scratch
+Screenshot*.png
