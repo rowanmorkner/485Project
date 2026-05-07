@@ -150,15 +150,32 @@ def synthetic_high_from_brackets(brackets: list[dict], venue: str) -> int | None
 
 # ── Per-pair scoring ─────────────────────────────────────────────────────
 
+def _yes_wins(kalshi_high: int, tail_below: bool, tail_above: bool,
+              boundary: int | None, degrees: list[int]) -> bool:
+  """Same win-rule as BracketQuote.yes_predicate but operating on the
+  HedgedPair's persisted fields (no live BracketQuote object available)."""
+  if tail_below and boundary is not None:
+    return kalshi_high <= boundary
+  if tail_above and boundary is not None:
+    return kalshi_high >= boundary
+  return kalshi_high in degrees
+
+
 def realized_payoff(pair, kalshi_high: int, poly_high: int) -> float:
-  """Per-contract realized $ for one HedgedPair given each venue's close."""
-  # Reproduce the win-set logic from strategy.arbitrage:
-  # YES side wins iff settled high lies in the bracket's degrees;
-  # NO side wins iff it does NOT.
-  k_in = kalshi_high in pair.kalshi_degrees
-  p_in = poly_high in pair.poly_degrees
-  k_won = k_in if pair.kalshi_side == "yes" else not k_in
-  p_won = p_in if pair.poly_side == "yes" else not p_in
+  """Per-contract realized $ for one HedgedPair given each venue's close.
+
+  Open-ended brackets resolve by their boundary predicate, not by membership
+  in the (narrow) degrees list — otherwise a "72° or below" bracket would
+  be scored as a loss when the actual high is 62°F.
+  """
+  k_yes = _yes_wins(kalshi_high, pair.kalshi_tail_below,
+                    pair.kalshi_tail_above, pair.kalshi_boundary,
+                    pair.kalshi_degrees)
+  p_yes = _yes_wins(poly_high, pair.poly_tail_below,
+                    pair.poly_tail_above, pair.poly_boundary,
+                    pair.poly_degrees)
+  k_won = k_yes if pair.kalshi_side == "yes" else not k_yes
+  p_won = p_yes if pair.poly_side == "yes" else not p_yes
   gross = (1.0 if k_won else 0.0) + (1.0 if p_won else 0.0)
   return gross - pair.cost_per_pair
 

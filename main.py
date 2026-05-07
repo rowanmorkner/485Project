@@ -113,6 +113,12 @@ def fetch_polymarket_events(client: PolymarketClient, city_name: str) -> list[di
     title = event.get("title", "N/A")
     brackets = []
     for mkt in event.get("markets", []):
+      # Polymarket events keep already-resolved brackets in their markets
+      # list. The CLOB orderbook endpoint 404s on those, flooding the log
+      # with "No orderbook exists for the requested token id" warnings.
+      # Skip them — there's no executable book to read.
+      if mkt.get("closed") or mkt.get("archived"):
+        continue
       outcome_prices = mkt.get("outcomePrices", "")
       yes_price = None
       if outcome_prices:

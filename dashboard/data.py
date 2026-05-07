@@ -180,6 +180,19 @@ def settlements_frame() -> pd.DataFrame:
       parse_dates=["date", "recorded_at_utc"])
 
 
+@st.cache_data(ttl=30)
+def settlement_for(city: str, date: str) -> tuple[int | None, int | None]:
+  """Per-venue settled high for one (city, date), or (None, None) if not
+  yet resolved on either side."""
+  with _connect() as c:
+    row = c.execute(
+      "SELECT kalshi_high_f, polymarket_high_f FROM settlements "
+      "WHERE city=? AND date=?", (city, date)).fetchone()
+  if not row:
+    return None, None
+  return row["kalshi_high_f"], row["polymarket_high_f"]
+
+
 # ── Backtest ─────────────────────────────────────────────────────────────
 
 BACKTEST_PATH = PROJECT_ROOT / "data" / "backtest_results.parquet"
