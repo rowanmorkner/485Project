@@ -2,7 +2,7 @@
   "orders": [
     {
       "platform": "kalshi",
-      "ticker": "KXHIGHMIA-26MAY06-B90.5",
+      "ticker": "KXHIGHMIA-26MAY08-B90.5",
       "action": "buy",
       "side": "yes",
       "count": 1,
@@ -10,7 +10,7 @@
     },
     {
       "platform": "polymarket",
-      "condition_id": "0x68951df24f43fb3e26706ebe2a9035cf1f674c00b43e3769409346362baea6dd",
+      "condition_id": "0x433ec610ec2c8d6591e7f2a4e107c9a1585eb5df7035cf299ef1c70c0dcb97c0",
       "action": "buy",
       "side": "yes",
       "count": 2,
