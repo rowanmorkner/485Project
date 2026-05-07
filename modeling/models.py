@@ -27,7 +27,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
-from forecast import Forecast, gaussian_to_pmf
+from .forecast import Forecast, gaussian_to_pmf
 
 # Floor on predicted std (°F). Without this, models can predict near-zero σ
 # on easy days and get crushed on the rare days they're wrong.

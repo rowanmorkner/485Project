@@ -40,6 +40,7 @@ import subprocess
 import sys
 import time
 import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -177,15 +178,23 @@ def mark_trained() -> None:
 
 def run_poll_pass(log: logging.Logger,
                   k: KalshiClient, p: PolymarketClient, w: NWSClient) -> None:
-  """One sweep across every city. Per-city errors are isolated."""
-  log.info("--- Poll pass starting (%d cities) ---", len(CITIES))
-  for city_name, city_config in CITIES.items():
-    try:
-      bot_main.analyze_city(city_name, city_config, k, p, w)
-    except KeyboardInterrupt:
-      raise  # let SIGINT propagate to main loop
-    except Exception:
-      log.error("[%s] poll failed:\n%s", city_name, traceback.format_exc())
+  """Sweep every city in parallel. Each city is mostly HTTP I/O, so a
+  thread pool wins easily; per-city errors stay isolated. Stdout from
+  concurrent cities will interleave but the per-city ### headers in
+  main.analyze_city keep each section legible.
+  """
+  log.info("--- Poll pass starting (%d cities, parallel) ---", len(CITIES))
+  with ThreadPoolExecutor(max_workers=len(CITIES)) as pool:
+    futures = {
+      pool.submit(bot_main.analyze_city, name, cfg, k, p, w): name
+      for name, cfg in CITIES.items()
+    }
+    for fut in as_completed(futures):
+      name = futures[fut]
+      try:
+        fut.result()
+      except Exception:
+        log.error("[%s] poll failed:\n%s", name, traceback.format_exc())
   log.info("--- Poll pass complete ---")
 
 

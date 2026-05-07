@@ -13,10 +13,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from dataset import CITIES, city_slug
-from forecast import hit_rates, report, report_hits, report_pmf
-from models import (EnsembleModel, HeteroscedasticRidgeModel,
-                    NGBoostNormalModel, XGBMeanVarModel)
+from .dataset import CITIES, city_slug
+from .forecast import hit_rates, report, report_hits, report_pmf
+from .models import (EnsembleModel, HeteroscedasticRidgeModel,
+                     NGBoostNormalModel, XGBMeanVarModel)
 
 DATASETS_DIR = Path("data/datasets")
 TARGET = "tmax_actual"

@@ -27,9 +27,9 @@ import numpy as np
 import pandas as pd
 import requests
 
-from dataset import CITIES, DAILY_VARS, HOURLY_VARS, city_slug
-from models import (EnsembleModel, HeteroscedasticRidgeModel,
-                    NGBoostNormalModel, XGBMeanVarModel)
+from .dataset import CITIES, DAILY_VARS, HOURLY_VARS, city_slug
+from .models import (EnsembleModel, HeteroscedasticRidgeModel,
+                     NGBoostNormalModel, XGBMeanVarModel)
 
 LIVE_URL = "https://api.open-meteo.com/v1/forecast"
 DATASETS_DIR = Path("data/datasets")
@@ -48,8 +48,10 @@ def fetch_live_features(city_name: str) -> pd.DataFrame:
         "temperature_unit": "fahrenheit",
         "precipitation_unit": "inch",
         "windspeed_unit": "mph",
+        # Yesterday + today + tomorrow + day-after gives enough feature rows
+        # to predict the next ~3 target tmax days using the day-ahead model.
         "past_days": 1,
-        "forecast_days": 1,
+        "forecast_days": 3,
     }
     resp = requests.get(LIVE_URL, params=params, timeout=60)
     resp.raise_for_status()
@@ -108,32 +110,62 @@ def align_features(X_today: pd.DataFrame,
     return X[feature_names]
 
 
-def predict_for(city_name: str):
-    """Train ensemble, fetch live features, predict tomorrow's high."""
+def predict_for(city_name: str, target_dates: list[str] | None = None):
+    """Train ensemble, fetch live features, predict each target date.
+
+    target_dates: ISO strings (YYYY-MM-DD). If None, defaults to tomorrow.
+    Returns (forecasts, source_date) where forecasts has one Forecast per
+    successfully-predicted target date and source_date is the live-features
+    observation day. Targets without available features are skipped.
+    """
     print(f"\n--- {city_name} ---")
     ensemble, feature_names, df_train = train_ensemble(city_name)
 
     print("  Fetching live features...")
     live = fetch_live_features(city_name)
 
-    # Today's date in the city's local time (matches Open-Meteo's tz-naive output)
     today = pd.Timestamp.now(tz=CITIES[city_name]["timezone"]) \
               .normalize().tz_localize(None)
-
     if today not in live.index:
         print(f"  ! today ({today.date()}) not in live response; "
               f"falling back to most recent: {live.index.max().date()}")
         today = live.index.max()
 
-    X_today = align_features(live.loc[[today]], feature_names, df_train)
+    if target_dates is None:
+        target_dates = [(today + pd.Timedelta(days=1)).strftime("%Y-%m-%d")]
 
-    tomorrow = today + pd.Timedelta(days=1)
-    fc = ensemble.forecast(
-        X_today,
-        cities=[city_name],
-        dates=[tomorrow.strftime("%Y-%m-%d")],
-    )[0]
-    return fc, today, tomorrow
+    forecasts = predict_with(ensemble, feature_names, df_train,
+                             live, city_name, target_dates)
+    return forecasts, today
+
+
+def predict_with(ensemble, feature_names: list[str], df_train: pd.DataFrame,
+                 live_features: pd.DataFrame, city_name: str,
+                 target_dates: list[str]):
+    """Predict for each target date using features observed the day before.
+
+    The ensemble is trained as "features on day D → tmax on D+1", so for
+    each target date we look up the feature row at (target - 1 day) in
+    `live_features`. Targets without a corresponding feature row are
+    silently dropped.
+    """
+    rows: list[pd.DataFrame] = []
+    valid_dates: list[str] = []
+    for td in target_dates:
+        feature_date = pd.Timestamp(td) - pd.Timedelta(days=1)
+        if feature_date not in live_features.index:
+            print(f"  ! features for {feature_date.date()} (target {td}) "
+                  f"not in live response; skipping")
+            continue
+        rows.append(align_features(
+            live_features.loc[[feature_date]], feature_names, df_train))
+        valid_dates.append(td)
+    if not rows:
+        return []
+    X = pd.concat(rows, ignore_index=False)
+    return ensemble.forecast(
+        X, cities=[city_name] * len(valid_dates), dates=valid_dates,
+    )
 
 
 def display(fc, source_date) -> None:
@@ -182,8 +214,9 @@ def main():
             print(f"Available: {list(CITIES.keys())}")
             continue
         try:
-            fc, source_date, _ = predict_for(city)
-            display(fc, source_date)
+            forecasts, source_date = predict_for(city)
+            for fc in forecasts:
+                display(fc, source_date)
         except Exception as e:
             print(f"  ! Failed for {city}: {e}")
 
