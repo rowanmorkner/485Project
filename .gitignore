@@ -55,3 +55,6 @@ backtests/_cache/
 
 # Bot logs (rotated daily)
 logs/
+
+# Local-only project instructions
+CLAUDE.md
