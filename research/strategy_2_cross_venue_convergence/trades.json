@@ -1,0 +1,1406 @@
+{
+  "v1": [
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T02:51:22+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHMIA-26MAY06-B84.5",
+      "bracket_label": "84\u00b0 to 85\u00b0",
+      "degrees": [
+        84,
+        85
+      ],
+      "size": 25,
+      "entry_price": 0.03,
+      "exit_price": 0.02,
+      "entry_gap": 0.065,
+      "rival_venue": "polymarket",
+      "rival_price": 0.09,
+      "pnl": -0.5
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T02:51:22+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHMIA-26MAY06-B86.5",
+      "bracket_label": "86\u00b0 to 87\u00b0",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.14,
+      "exit_price": 0.05,
+      "entry_gap": 0.20499999999999996,
+      "rival_venue": "polymarket",
+      "rival_price": 0.33999999999999997,
+      "pnl": -2.5000000000000004
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T02:11:22+00:00",
+      "exit_reason": "target",
+      "venue": "polymarket",
+      "bracket_id": "85140689607721506665183294099894542176790118996057348173338186542361012642511",
+      "bracket_label": "88-89\u00b0F",
+      "degrees": [
+        88,
+        89
+      ],
+      "size": 25,
+      "entry_price": 0.43734,
+      "exit_price": 0.376712,
+      "entry_gap": 0.09999999999999998,
+      "rival_venue": "kalshi",
+      "rival_price": 0.515,
+      "pnl": -1.7657000000000007
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T02:51:23+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket",
+      "bracket_id": "114804271894982121980731173088377309764570850472853600164450085672265661761181",
+      "bracket_label": "90-91\u00b0F",
+      "degrees": [
+        90,
+        91
+      ],
+      "size": 25,
+      "entry_price": 0.13,
+      "exit_price": 0.114104,
+      "entry_gap": 0.19,
+      "rival_venue": "kalshi",
+      "rival_price": 0.315,
+      "pnl": -0.6474000000000002
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-06T02:51:31+00:00",
+      "exit_reason": "time_stop",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHLAX-26MAY06-B66.5",
+      "bracket_label": "66\u00b0 to 67\u00b0",
+      "degrees": [
+        66,
+        67
+      ],
+      "size": 25,
+      "entry_price": 0.08,
+      "exit_price": 0.098,
+      "entry_gap": 0.2,
+      "rival_venue": "polymarket",
+      "rival_price": 0.275,
+      "pnl": 0.20000000000000018
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-06T01:41:30+00:00",
+      "exit_reason": "target",
+      "venue": "polymarket",
+      "bracket_id": "41289218638665034309059808054349574886330797208477504580184804911816266160718",
+      "bracket_label": "68-69\u00b0F",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.4768,
+      "exit_price": 0.444,
+      "entry_gap": 0.05500000000000005,
+      "rival_venue": "kalshi",
+      "rival_price": 0.495,
+      "pnl": -1.0700000000000003
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-06T02:51:31+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket",
+      "bracket_id": "73557937948784610229970049501409596526652410428157868041850632059121267451134",
+      "bracket_label": "70-71\u00b0F",
+      "degrees": [
+        70,
+        71
+      ],
+      "size": 25,
+      "entry_price": 0.23,
+      "exit_price": 0.105444,
+      "entry_gap": 0.175,
+      "rival_venue": "kalshi",
+      "rival_price": 0.37,
+      "pnl": -3.3639
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T14:16:38+00:00",
+      "exit_ts": "2026-05-06T14:31:38+00:00",
+      "exit_reason": "target",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHLAX-26MAY06-B68.5",
+      "bracket_label": "68\u00b0 to 69\u00b0",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.6,
+      "exit_price": 0.5992000000000001,
+      "entry_gap": 0.050000000000000044,
+      "rival_venue": "polymarket",
+      "rival_price": 0.64,
+      "pnl": -0.2699999999999996
+    },
+    {
+      "city": "Austin",
+      "entry_ts": "2026-05-06T00:47:45+00:00",
+      "exit_ts": "2026-05-06T01:31:36+00:00",
+      "exit_reason": "target",
+      "venue": "polymarket",
+      "bracket_id": "115242006864900637683326616091450246808371407124626760289226314028811477373394",
+      "bracket_label": "86-87\u00b0F",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.1,
+      "exit_price": 0.08,
+      "entry_gap": 0.08499999999999999,
+      "rival_venue": "kalshi",
+      "rival_price": 0.18,
+      "pnl": -0.75
+    }
+  ],
+  "v2": [
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T02:51:22+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHMIA-26MAY06-B84.5",
+      "bracket_label": "84\u00b0 to 85\u00b0",
+      "degrees": [
+        84,
+        85
+      ],
+      "size": 25,
+      "entry_price": 0.03,
+      "exit_price": 0.02,
+      "entry_gap": 0.065,
+      "rival_venue": "polymarket",
+      "rival_price": 0.09,
+      "pnl": -0.5
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T02:51:23+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket",
+      "bracket_id": "114804271894982121980731173088377309764570850472853600164450085672265661761181",
+      "bracket_label": "90-91\u00b0F",
+      "degrees": [
+        90,
+        91
+      ],
+      "size": 25,
+      "entry_price": 0.13,
+      "exit_price": 0.114104,
+      "entry_gap": 0.19,
+      "rival_venue": "kalshi",
+      "rival_price": 0.315,
+      "pnl": -0.6474000000000002
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T02:11:22+00:00",
+      "exit_ts": "2026-05-06T04:11:23+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHMIA-26MAY06-B86.5",
+      "bracket_label": "86\u00b0 to 87\u00b0",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.09,
+      "exit_price": 0.17,
+      "entry_gap": 0.245,
+      "rival_venue": "polymarket",
+      "rival_price": 0.325,
+      "pnl": 1.75
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T09:36:26+00:00",
+      "exit_ts": "2026-05-06T11:31:27+00:00",
+      "exit_reason": "target",
+      "venue": "polymarket",
+      "bracket_id": "85140689607721506665183294099894542176790118996057348173338186542361012642511",
+      "bracket_label": "88-89\u00b0F",
+      "degrees": [
+        88,
+        89
+      ],
+      "size": 25,
+      "entry_price": 0.51,
+      "exit_price": 0.47,
+      "entry_gap": 0.07499999999999996,
+      "rival_venue": "kalshi",
+      "rival_price": 0.585,
+      "pnl": -1.25
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T01:46:30+00:00",
+      "exit_ts": "2026-05-06T03:46:32+00:00",
+      "exit_reason": "time_stop",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHLAX-26MAY06-B66.5",
+      "bracket_label": "66\u00b0 to 67\u00b0",
+      "degrees": [
+        66,
+        67
+      ],
+      "size": 25,
+      "entry_price": 0.15,
+      "exit_price": 0.11959999999999998,
+      "entry_gap": 0.13,
+      "rival_venue": "polymarket",
+      "rival_price": 0.275,
+      "pnl": -1.0100000000000002
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T05:21:35+00:00",
+      "exit_ts": "2026-05-06T05:36:35+00:00",
+      "exit_reason": "target",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHLAX-26MAY06-T71",
+      "bracket_label": "72\u00b0 or above",
+      "degrees": [
+        72,
+        73,
+        74,
+        75,
+        76,
+        77
+      ],
+      "size": 25,
+      "entry_price": 0.04,
+      "exit_price": 0.0796,
+      "entry_gap": 0.06899999999999999,
+      "rival_venue": "polymarket",
+      "rival_price": 0.104,
+      "pnl": 0.74
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T11:46:35+00:00",
+      "exit_ts": "2026-05-06T12:46:35+00:00",
+      "exit_reason": "target",
+      "venue": "polymarket",
+      "bracket_id": "41289218638665034309059808054349574886330797208477504580184804911816266160718",
+      "bracket_label": "68-69\u00b0F",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.54,
+      "exit_price": 0.5280320000000001,
+      "entry_gap": 0.17499999999999993,
+      "rival_venue": "kalshi",
+      "rival_price": 0.695,
+      "pnl": -0.549199999999999
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T12:51:35+00:00",
+      "exit_ts": "2026-05-06T14:51:38+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket",
+      "bracket_id": "73557937948784610229970049501409596526652410428157868041850632059121267451134",
+      "bracket_label": "70-71\u00b0F",
+      "degrees": [
+        70,
+        71
+      ],
+      "size": 25,
+      "entry_price": 0.2,
+      "exit_price": 0.204484,
+      "entry_gap": 0.065,
+      "rival_venue": "kalshi",
+      "rival_price": 0.24,
+      "pnl": -0.13790000000000013
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T17:31:40+00:00",
+      "exit_ts": "2026-05-06T17:56:41+00:00",
+      "exit_reason": "target",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHLAX-26MAY06-B68.5",
+      "bracket_label": "68\u00b0 to 69\u00b0",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.57,
+      "exit_price": 0.63,
+      "entry_gap": 0.08499999999999996,
+      "rival_venue": "polymarket",
+      "rival_price": 0.635,
+      "pnl": 1.2500000000000018
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T17:46:40+00:00",
+      "exit_ts": "2026-05-06T18:01:40+00:00",
+      "exit_reason": "target",
+      "venue": "polymarket",
+      "bracket_id": "76067091036101914162425572935058722472617957275667844055425934125300458823955",
+      "bracket_label": "76\u00b0F or higher",
+      "degrees": [
+        76,
+        77,
+        78,
+        79,
+        80,
+        81
+      ],
+      "size": 25,
+      "entry_price": 0.006,
+      "exit_price": 0.001572,
+      "entry_gap": 0.052,
+      "rival_venue": "kalshi",
+      "rival_price": 0.055,
+      "pnl": -0.3607
+    },
+    {
+      "city": "Austin",
+      "entry_ts": "2026-05-06T00:47:45+00:00",
+      "exit_ts": "2026-05-06T01:31:36+00:00",
+      "exit_reason": "target",
+      "venue": "polymarket",
+      "bracket_id": "115242006864900637683326616091450246808371407124626760289226314028811477373394",
+      "bracket_label": "86-87\u00b0F",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.1,
+      "exit_price": 0.08,
+      "entry_gap": 0.08499999999999999,
+      "rival_venue": "kalshi",
+      "rival_price": 0.18,
+      "pnl": -0.75
+    },
+    {
+      "city": "Austin",
+      "entry_ts": "2026-05-06T00:55:45+00:00",
+      "exit_ts": "2026-05-06T02:56:37+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket",
+      "bracket_id": "67567443906469341795329494411211362526477669600496033789035091498577391191175",
+      "bracket_label": "84-85\u00b0F",
+      "degrees": [
+        84,
+        85
+      ],
+      "size": 25,
+      "entry_price": 0.15,
+      "exit_price": 0.08,
+      "entry_gap": 0.14833333333333337,
+      "rival_venue": "kalshi",
+      "rival_price": 0.26833333333333337,
+      "pnl": -2.0
+    },
+    {
+      "city": "Austin",
+      "entry_ts": "2026-05-06T04:16:38+00:00",
+      "exit_ts": "2026-05-06T06:16:43+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket",
+      "bracket_id": "22436669310881465227881647334282811270479217892164992717515227955688380361377",
+      "bracket_label": "82-83\u00b0F",
+      "degrees": [
+        82,
+        83
+      ],
+      "size": 25,
+      "entry_price": 0.09,
+      "exit_price": 0.092,
+      "entry_gap": 0.21999999999999997,
+      "rival_venue": "kalshi",
+      "rival_price": 0.285,
+      "pnl": -0.20000000000000018
+    },
+    {
+      "city": "San Francisco",
+      "entry_ts": "2026-05-06T00:47:53+00:00",
+      "exit_ts": "2026-05-06T02:51:45+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket",
+      "bracket_id": "56234483530956860788646967052402293409401870812725543348867011710576153484515",
+      "bracket_label": "58-59\u00b0F",
+      "degrees": [
+        58,
+        59
+      ],
+      "size": 25,
+      "entry_price": 0.008,
+      "exit_price": 0.004,
+      "entry_gap": 0.05566666666666667,
+      "rival_venue": "kalshi",
+      "rival_price": 0.06166666666666667,
+      "pnl": -0.35
+    },
+    {
+      "city": "San Francisco",
+      "entry_ts": "2026-05-06T00:47:53+00:00",
+      "exit_ts": "2026-05-06T02:51:45+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket",
+      "bracket_id": "64570782608630375241483748306845855316112798390498409338386530071015111652045",
+      "bracket_label": "68-69\u00b0F",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.013000000000000001,
+      "exit_price": 0.011,
+      "entry_gap": 0.06250000000000001,
+      "rival_venue": "kalshi",
+      "rival_price": 0.07500000000000001,
+      "pnl": -0.30000000000000004
+    },
+    {
+      "city": "San Francisco",
+      "entry_ts": "2026-05-06T00:55:53+00:00",
+      "exit_ts": "2026-05-06T02:56:45+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket",
+      "bracket_id": "55650228858242358095845233025142684134545460634862797069680683701219848536584",
+      "bracket_label": "66-67\u00b0F",
+      "degrees": [
+        66,
+        67
+      ],
+      "size": 25,
+      "entry_price": 0.11,
+      "exit_price": 0.0786,
+      "entry_gap": 0.155,
+      "rival_venue": "kalshi",
+      "rival_price": 0.255,
+      "pnl": -1.035
+    },
+    {
+      "city": "San Francisco",
+      "entry_ts": "2026-05-06T02:46:44+00:00",
+      "exit_ts": "2026-05-06T04:46:50+00:00",
+      "exit_reason": "time_stop",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHTSFO-26MAY06-T63",
+      "bracket_label": "62\u00b0 or below",
+      "degrees": [
+        57,
+        58,
+        59,
+        60,
+        61,
+        62
+      ],
+      "size": 25,
+      "entry_price": 0.15,
+      "exit_price": 0.11,
+      "entry_gap": 0.16325,
+      "rival_venue": "polymarket",
+      "rival_price": 0.29825,
+      "pnl": -1.25
+    },
+    {
+      "city": "San Francisco",
+      "entry_ts": "2026-05-06T03:21:45+00:00",
+      "exit_ts": "2026-05-06T05:21:52+00:00",
+      "exit_reason": "time_stop",
+      "venue": "kalshi",
+      "bracket_id": "KXHIGHTSFO-26MAY06-B63.5",
+      "bracket_label": "63\u00b0 to 64\u00b0",
+      "degrees": [
+        63,
+        64
+      ],
+      "size": 25,
+      "entry_price": 0.27,
+      "exit_price": 0.2648,
+      "entry_gap": 0.12749999999999995,
+      "rival_venue": "polymarket",
+      "rival_price": 0.39249999999999996,
+      "pnl": -0.3799999999999999
+    },
+    {
+      "city": "San Francisco",
+      "entry_ts": "2026-05-06T14:46:55+00:00",
+      "exit_ts": "2026-05-06T16:46:55+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket",
+      "bracket_id": "62391131539469281010253608716404873589236467761016325997286005042973133765138",
+      "bracket_label": "70-71\u00b0F",
+      "degrees": [
+        70,
+        71
+      ],
+      "size": 25,
+      "entry_price": 0.01,
+      "exit_price": 0.009,
+      "entry_gap": 0.051500000000000004,
+      "rival_venue": "kalshi",
+      "rival_price": 0.060000000000000005,
+      "pnl": -0.275
+    },
+    {
+      "city": "Seattle",
+      "entry_ts": "2026-05-06T01:21:52+00:00",
+      "exit_ts": "2026-05-06T03:21:54+00:00",
+      "exit_reason": "target",
+      "venue": "polymarket",
+      "bracket_id": "73649014478149261351071350567883608265736566247368742914094102684209065784060",
+      "bracket_label": "70-71\u00b0F",
+      "degrees": [
+        70,
+        71
+      ],
+      "size": 25,
+      "entry_price": 0.012,
+      "exit_price": 0.013000000000000001,
+      "entry_gap": 0.10850000000000001,
+      "rival_venue": "kalshi",
+      "rival_price": 0.12000000000000001,
+      "pnl": -0.22499999999999998
+    },
+    {
+      "city": "Seattle",
+      "entry_ts": "2026-05-06T01:36:52+00:00",
+      "exit_ts": "2026-05-06T03:11:53+00:00",
+      "exit_reason": "target",
+      "venue": "polymarket",
+      "bracket_id": "19162272982759966270897503075282471100928553074431350018631583262600813359777",
+      "bracket_label": "64-65\u00b0F",
+      "degrees": [
+        64,
+        65
+      ],
+      "size": 25,
+      "entry_price": 0.11,
+      "exit_price": 0.16,
+      "entry_gap": 0.15666666666666668,
+      "rival_venue": "kalshi",
+      "rival_price": 0.24666666666666667,
+      "pnl": 1.0
+    },
+    {
+      "city": "Seattle",
+      "entry_ts": "2026-05-06T02:11:52+00:00",
+      "exit_ts": "2026-05-06T04:11:54+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket",
+      "bracket_id": "95589195240443294345125377886676016660933601138905335561706526564066367067133",
+      "bracket_label": "62-63\u00b0F",
+      "degrees": [
+        62,
+        63
+      ],
+      "size": 25,
+      "entry_price": 0.073,
+      "exit_price": 0.06060000000000001,
+      "entry_gap": 0.06833333333333333,
+      "rival_venue": "kalshi",
+      "rival_price": 0.12833333333333333,
+      "pnl": -0.5599999999999998
+    },
+    {
+      "city": "Seattle",
+      "entry_ts": "2026-05-06T07:02:03+00:00",
+      "exit_ts": "2026-05-06T09:07:01+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket",
+      "bracket_id": "105182352618317649429979250835373057668324429487695411605476166349952078400328",
+      "bracket_label": "68-69\u00b0F",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.16,
+      "exit_price": 0.034,
+      "entry_gap": 0.05583333333333332,
+      "rival_venue": "kalshi",
+      "rival_price": 0.18583333333333332,
+      "pnl": -3.4
+    },
+    {
+      "city": "Seattle",
+      "entry_ts": "2026-05-06T12:31:57+00:00",
+      "exit_ts": "2026-05-06T14:32:03+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket",
+      "bracket_id": "108596893737870220856376440624506485374514670658552463548378281691807210804418",
+      "bracket_label": "66-67\u00b0F",
+      "degrees": [
+        66,
+        67
+      ],
+      "size": 25,
+      "entry_price": 0.08200000000000002,
+      "exit_price": 0.031,
+      "entry_gap": 0.2428333333333333,
+      "rival_venue": "kalshi",
+      "rival_price": 0.3183333333333333,
+      "pnl": -1.5250000000000004
+    }
+  ],
+  "v3": [
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T04:51:25+00:00",
+      "exit_reason": "time_stop",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHMIA-26MAY06-B84.5|100881562995294908510321203430593750218022655925410093547597547945049279894385",
+      "bracket_label": "[84, 85]",
+      "degrees": [
+        84,
+        85
+      ],
+      "size": 25,
+      "entry_price": 0.958472,
+      "exit_price": 0.894,
+      "entry_gap": 0.065,
+      "rival_venue": "polymarket",
+      "rival_price": 0.09,
+      "pnl": -2.111799999999999
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T04:51:25+00:00",
+      "exit_reason": "time_stop",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHMIA-26MAY06-B86.5|64687270356227877735114551541159909514813507468449537872914426083910271559504",
+      "bracket_label": "[86, 87]",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.8,
+      "exit_price": 0.773116,
+      "entry_gap": 0.20499999999999996,
+      "rival_venue": "polymarket",
+      "rival_price": 0.33999999999999997,
+      "pnl": -1.1721000000000004
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T04:01:23+00:00",
+      "exit_reason": "target",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "85140689607721506665183294099894542176790118996057348173338186542361012642511|KXHIGHMIA-26MAY06-B88.5",
+      "bracket_label": "[88, 89]",
+      "degrees": [
+        88,
+        89
+      ],
+      "size": 25,
+      "entry_price": 0.92734,
+      "exit_price": 1.024,
+      "entry_gap": 0.09999999999999998,
+      "rival_venue": "kalshi",
+      "rival_price": 0.515,
+      "pnl": 1.9164999999999992
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T04:51:25+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "114804271894982121980731173088377309764570850472853600164450085672265661761181|KXHIGHMIA-26MAY06-B90.5",
+      "bracket_label": "[90, 91]",
+      "degrees": [
+        90,
+        91
+      ],
+      "size": 25,
+      "entry_price": 0.8247999999999999,
+      "exit_price": 0.78,
+      "entry_gap": 0.19,
+      "rival_venue": "kalshi",
+      "rival_price": 0.315,
+      "pnl": -1.6199999999999974
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-06T03:41:31+00:00",
+      "exit_reason": "target",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHLAX-26MAY06-B66.5|83590088738043453035891510132552140679003894325396704338395813529299844441659",
+      "bracket_label": "[66, 67]",
+      "degrees": [
+        66,
+        67
+      ],
+      "size": 25,
+      "entry_price": 0.8284999999999999,
+      "exit_price": 0.8692319999999999,
+      "entry_gap": 0.2,
+      "rival_venue": "polymarket",
+      "rival_price": 0.275,
+      "pnl": 0.5183
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-06T04:51:34+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "41289218638665034309059808054349574886330797208477504580184804911816266160718|KXHIGHLAX-26MAY06-B68.5",
+      "bracket_label": "[68, 69]",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.9924000000000001,
+      "exit_price": 0.923576,
+      "entry_gap": 0.05500000000000005,
+      "rival_venue": "kalshi",
+      "rival_price": 0.495,
+      "pnl": -2.2206000000000046
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-06T04:51:34+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "73557937948784610229970049501409596526652410428157868041850632059121267451134|KXHIGHLAX-26MAY06-B70.5",
+      "bracket_label": "[70, 71]",
+      "degrees": [
+        70,
+        71
+      ],
+      "size": 25,
+      "entry_price": 0.87,
+      "exit_price": 0.8964,
+      "entry_gap": 0.175,
+      "rival_venue": "kalshi",
+      "rival_price": 0.37,
+      "pnl": 0.16000000000000014
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T14:16:38+00:00",
+      "exit_ts": "2026-05-06T18:16:41+00:00",
+      "exit_reason": "time_stop",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHLAX-26MAY06-B68.5|41289218638665034309059808054349574886330797208477504580184804911816266160718",
+      "bracket_label": "[68, 69]",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.991504,
+      "exit_price": 0.766216,
+      "entry_gap": 0.050000000000000044,
+      "rival_venue": "polymarket",
+      "rival_price": 0.64,
+      "pnl": -6.132200000000001
+    },
+    {
+      "city": "Austin",
+      "entry_ts": "2026-05-06T00:47:45+00:00",
+      "exit_ts": "2026-05-06T04:51:41+00:00",
+      "exit_reason": "time_stop",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "115242006864900637683326616091450246808371407124626760289226314028811477373394|KXHIGHAUS-26MAY06-B86.5",
+      "bracket_label": "[86, 87]",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.9431999999999999,
+      "exit_price": 0.91,
+      "entry_gap": 0.08499999999999999,
+      "rival_venue": "kalshi",
+      "rival_price": 0.18,
+      "pnl": -1.3299999999999983
+    }
+  ],
+  "v4": [
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T15:21:30+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHMIA-26MAY06-B84.5|100881562995294908510321203430593750218022655925410093547597547945049279894385",
+      "bracket_label": "[84, 85]",
+      "degrees": [
+        84,
+        85
+      ],
+      "size": 25,
+      "entry_price": 0.958472,
+      "exit_price": 1.0190000000000001,
+      "entry_gap": 0.065,
+      "rival_venue": "polymarket",
+      "rival_price": 0.09,
+      "pnl": 1.0132000000000012
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T17:51:32+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHMIA-26MAY06-B86.5|64687270356227877735114551541159909514813507468449537872914426083910271559504",
+      "bracket_label": "[86, 87]",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.8,
+      "exit_price": 1.0590000000000002,
+      "entry_gap": 0.20499999999999996,
+      "rival_venue": "polymarket",
+      "rival_price": 0.33999999999999997,
+      "pnl": 5.975000000000001
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-07T05:16:40+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "85140689607721506665183294099894542176790118996057348173338186542361012642511|KXHIGHMIA-26MAY06-B88.5",
+      "bracket_label": "[88, 89]",
+      "degrees": [
+        88,
+        89
+      ],
+      "size": 25,
+      "entry_price": 0.92734,
+      "exit_price": 1.0166000000000002,
+      "entry_gap": 0.09999999999999998,
+      "rival_venue": "kalshi",
+      "rival_price": 0.515,
+      "pnl": 1.7315000000000005
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T21:56:35+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "114804271894982121980731173088377309764570850472853600164450085672265661761181|KXHIGHMIA-26MAY06-B90.5",
+      "bracket_label": "[90, 91]",
+      "degrees": [
+        90,
+        91
+      ],
+      "size": 25,
+      "entry_price": 0.8247999999999999,
+      "exit_price": 0.992,
+      "entry_gap": 0.19,
+      "rival_venue": "kalshi",
+      "rival_price": 0.315,
+      "pnl": 3.6800000000000033
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-06T17:26:40+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHLAX-26MAY06-B66.5|83590088738043453035891510132552140679003894325396704338395813529299844441659",
+      "bracket_label": "[66, 67]",
+      "degrees": [
+        66,
+        67
+      ],
+      "size": 25,
+      "entry_price": 0.8284999999999999,
+      "exit_price": 1.0238,
+      "entry_gap": 0.2,
+      "rival_venue": "polymarket",
+      "rival_price": 0.275,
+      "pnl": 4.382500000000004
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-07T05:16:50+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "41289218638665034309059808054349574886330797208477504580184804911816266160718|KXHIGHLAX-26MAY06-B68.5",
+      "bracket_label": "[68, 69]",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.9924000000000001,
+      "exit_price": 1.0490000000000002,
+      "entry_gap": 0.05500000000000005,
+      "rival_venue": "kalshi",
+      "rival_price": 0.495,
+      "pnl": 0.9149999999999991
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-07T02:36:45+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "73557937948784610229970049501409596526652410428157868041850632059121267451134|KXHIGHLAX-26MAY06-B70.5",
+      "bracket_label": "[70, 71]",
+      "degrees": [
+        70,
+        71
+      ],
+      "size": 25,
+      "entry_price": 0.87,
+      "exit_price": 0.99,
+      "entry_gap": 0.175,
+      "rival_venue": "kalshi",
+      "rival_price": 0.37,
+      "pnl": 2.5
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T14:16:38+00:00",
+      "exit_ts": "2026-05-07T05:16:50+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHLAX-26MAY06-B68.5|41289218638665034309059808054349574886330797208477504580184804911816266160718",
+      "bracket_label": "[68, 69]",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.991504,
+      "exit_price": 0.99,
+      "entry_gap": 0.050000000000000044,
+      "rival_venue": "polymarket",
+      "rival_price": 0.64,
+      "pnl": -0.5376000000000012
+    },
+    {
+      "city": "Austin",
+      "entry_ts": "2026-05-06T00:47:45+00:00",
+      "exit_ts": "2026-05-06T21:31:51+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "115242006864900637683326616091450246808371407124626760289226314028811477373394|KXHIGHAUS-26MAY06-B86.5",
+      "bracket_label": "[86, 87]",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.9431999999999999,
+      "exit_price": 0.99,
+      "entry_gap": 0.08499999999999999,
+      "rival_venue": "kalshi",
+      "rival_price": 0.18,
+      "pnl": 0.6700000000000017
+    }
+  ],
+  "v5": [
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T15:21:30+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHMIA-26MAY06-B84.5|100881562995294908510321203430593750218022655925410093547597547945049279894385",
+      "bracket_label": "[84, 85]",
+      "degrees": [
+        84,
+        85
+      ],
+      "size": 25,
+      "entry_price": 0.958472,
+      "exit_price": 1.0190000000000001,
+      "entry_gap": 0.065,
+      "rival_venue": "polymarket",
+      "rival_price": 0.09,
+      "pnl": 1.0132000000000012
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T17:51:32+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHMIA-26MAY06-B86.5|64687270356227877735114551541159909514813507468449537872914426083910271559504",
+      "bracket_label": "[86, 87]",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.8,
+      "exit_price": 1.0590000000000002,
+      "entry_gap": 0.20499999999999996,
+      "rival_venue": "polymarket",
+      "rival_price": 0.33999999999999997,
+      "pnl": 5.975000000000001
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-07T05:16:40+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "85140689607721506665183294099894542176790118996057348173338186542361012642511|KXHIGHMIA-26MAY06-B88.5",
+      "bracket_label": "[88, 89]",
+      "degrees": [
+        88,
+        89
+      ],
+      "size": 25,
+      "entry_price": 0.92734,
+      "exit_price": 1.0166000000000002,
+      "entry_gap": 0.09999999999999998,
+      "rival_venue": "kalshi",
+      "rival_price": 0.515,
+      "pnl": 1.7315000000000005
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T21:56:35+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "114804271894982121980731173088377309764570850472853600164450085672265661761181|KXHIGHMIA-26MAY06-B90.5",
+      "bracket_label": "[90, 91]",
+      "degrees": [
+        90,
+        91
+      ],
+      "size": 25,
+      "entry_price": 0.8247999999999999,
+      "exit_price": 0.992,
+      "entry_gap": 0.19,
+      "rival_venue": "kalshi",
+      "rival_price": 0.315,
+      "pnl": 3.6800000000000033
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-06T17:26:40+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHLAX-26MAY06-B66.5|83590088738043453035891510132552140679003894325396704338395813529299844441659",
+      "bracket_label": "[66, 67]",
+      "degrees": [
+        66,
+        67
+      ],
+      "size": 25,
+      "entry_price": 0.8284999999999999,
+      "exit_price": 1.0238,
+      "entry_gap": 0.2,
+      "rival_venue": "polymarket",
+      "rival_price": 0.275,
+      "pnl": 4.382500000000004
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-07T02:36:45+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "73557937948784610229970049501409596526652410428157868041850632059121267451134|KXHIGHLAX-26MAY06-B70.5",
+      "bracket_label": "[70, 71]",
+      "degrees": [
+        70,
+        71
+      ],
+      "size": 25,
+      "entry_price": 0.87,
+      "exit_price": 0.99,
+      "entry_gap": 0.175,
+      "rival_venue": "kalshi",
+      "rival_price": 0.37,
+      "pnl": 2.5
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T07:46:35+00:00",
+      "exit_ts": "2026-05-07T05:16:50+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "41289218638665034309059808054349574886330797208477504580184804911816266160718|KXHIGHLAX-26MAY06-B68.5",
+      "bracket_label": "[68, 69]",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.9326599999999999,
+      "exit_price": 1.0490000000000002,
+      "entry_gap": 0.06500000000000006,
+      "rival_venue": "kalshi",
+      "rival_price": 0.535,
+      "pnl": 2.4085000000000036
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T14:41:38+00:00",
+      "exit_ts": "2026-05-07T05:16:50+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHLAX-26MAY06-B68.5|41289218638665034309059808054349574886330797208477504580184804911816266160718",
+      "bracket_label": "[68, 69]",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.94,
+      "exit_price": 0.99,
+      "entry_gap": 0.06000000000000005,
+      "rival_venue": "polymarket",
+      "rival_price": 0.655,
+      "pnl": 0.75
+    },
+    {
+      "city": "Austin",
+      "entry_ts": "2026-05-06T00:47:45+00:00",
+      "exit_ts": "2026-05-06T21:31:51+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "115242006864900637683326616091450246808371407124626760289226314028811477373394|KXHIGHAUS-26MAY06-B86.5",
+      "bracket_label": "[86, 87]",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.9431999999999999,
+      "exit_price": 0.99,
+      "entry_gap": 0.08499999999999999,
+      "rival_venue": "kalshi",
+      "rival_price": 0.18,
+      "pnl": 0.6700000000000017
+    }
+  ],
+  "v6": [
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T15:21:30+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHMIA-26MAY06-B84.5|100881562995294908510321203430593750218022655925410093547597547945049279894385",
+      "bracket_label": "[84, 85]",
+      "degrees": [
+        84,
+        85
+      ],
+      "size": 25,
+      "entry_price": 0.958472,
+      "exit_price": 1.0190000000000001,
+      "entry_gap": 0.065,
+      "rival_venue": "polymarket",
+      "rival_price": 0.09,
+      "pnl": 1.0132000000000012
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T17:51:32+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHMIA-26MAY06-B86.5|64687270356227877735114551541159909514813507468449537872914426083910271559504",
+      "bracket_label": "[86, 87]",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.8,
+      "exit_price": 1.0590000000000002,
+      "entry_gap": 0.20499999999999996,
+      "rival_venue": "polymarket",
+      "rival_price": 0.33999999999999997,
+      "pnl": 5.975000000000001
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-07T05:16:40+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "85140689607721506665183294099894542176790118996057348173338186542361012642511|KXHIGHMIA-26MAY06-B88.5",
+      "bracket_label": "[88, 89]",
+      "degrees": [
+        88,
+        89
+      ],
+      "size": 25,
+      "entry_price": 0.92734,
+      "exit_price": 1.0166000000000002,
+      "entry_gap": 0.09999999999999998,
+      "rival_venue": "kalshi",
+      "rival_price": 0.515,
+      "pnl": 1.7315000000000005
+    },
+    {
+      "city": "Miami",
+      "entry_ts": "2026-05-06T00:47:30+00:00",
+      "exit_ts": "2026-05-06T21:56:35+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "114804271894982121980731173088377309764570850472853600164450085672265661761181|KXHIGHMIA-26MAY06-B90.5",
+      "bracket_label": "[90, 91]",
+      "degrees": [
+        90,
+        91
+      ],
+      "size": 25,
+      "entry_price": 0.8247999999999999,
+      "exit_price": 0.992,
+      "entry_gap": 0.19,
+      "rival_venue": "kalshi",
+      "rival_price": 0.315,
+      "pnl": 3.6800000000000033
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-06T17:26:40+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHLAX-26MAY06-B66.5|83590088738043453035891510132552140679003894325396704338395813529299844441659",
+      "bracket_label": "[66, 67]",
+      "degrees": [
+        66,
+        67
+      ],
+      "size": 25,
+      "entry_price": 0.8284999999999999,
+      "exit_price": 1.0238,
+      "entry_gap": 0.2,
+      "rival_venue": "polymarket",
+      "rival_price": 0.275,
+      "pnl": 4.382500000000004
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T00:47:38+00:00",
+      "exit_ts": "2026-05-07T02:36:45+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "73557937948784610229970049501409596526652410428157868041850632059121267451134|KXHIGHLAX-26MAY06-B70.5",
+      "bracket_label": "[70, 71]",
+      "degrees": [
+        70,
+        71
+      ],
+      "size": 25,
+      "entry_price": 0.87,
+      "exit_price": 0.99,
+      "entry_gap": 0.175,
+      "rival_venue": "kalshi",
+      "rival_price": 0.37,
+      "pnl": 2.5
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T07:46:35+00:00",
+      "exit_ts": "2026-05-07T05:16:50+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "41289218638665034309059808054349574886330797208477504580184804911816266160718|KXHIGHLAX-26MAY06-B68.5",
+      "bracket_label": "[68, 69]",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.9326599999999999,
+      "exit_price": 1.0490000000000002,
+      "entry_gap": 0.06500000000000006,
+      "rival_venue": "kalshi",
+      "rival_price": 0.535,
+      "pnl": 2.4085000000000036
+    },
+    {
+      "city": "LA",
+      "entry_ts": "2026-05-06T14:41:38+00:00",
+      "exit_ts": "2026-05-07T05:16:50+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "kalshi_long+polymarket_short",
+      "bracket_id": "KXHIGHLAX-26MAY06-B68.5|41289218638665034309059808054349574886330797208477504580184804911816266160718",
+      "bracket_label": "[68, 69]",
+      "degrees": [
+        68,
+        69
+      ],
+      "size": 25,
+      "entry_price": 0.94,
+      "exit_price": 0.99,
+      "entry_gap": 0.06000000000000005,
+      "rival_venue": "polymarket",
+      "rival_price": 0.655,
+      "pnl": 0.75
+    },
+    {
+      "city": "Austin",
+      "entry_ts": "2026-05-06T00:47:45+00:00",
+      "exit_ts": "2026-05-06T21:31:51+00:00",
+      "exit_reason": "end_of_window",
+      "venue": "polymarket_long+kalshi_short",
+      "bracket_id": "115242006864900637683326616091450246808371407124626760289226314028811477373394|KXHIGHAUS-26MAY06-B86.5",
+      "bracket_label": "[86, 87]",
+      "degrees": [
+        86,
+        87
+      ],
+      "size": 25,
+      "entry_price": 0.9431999999999999,
+      "exit_price": 0.99,
+      "entry_gap": 0.08499999999999999,
+      "rival_venue": "kalshi",
+      "rival_price": 0.18,
+      "pnl": 0.6700000000000017
+    }
+  ]
+}

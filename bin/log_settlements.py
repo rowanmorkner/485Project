@@ -3,9 +3,9 @@ Daily cron job: pull every recently-settled (city, date) market from both
 Kalshi and Polymarket, extract the winning bracket on each side, and write
 the implied "venue reading" to the settlements table.
 
-This is the data-acquisition half of Component 2. The companion job
-bin/refresh_risk_model.py reads from the settlements table and rebuilds
-the per-city Δ histogram used by strategy/risk.py.
+The strategy reads the per-city Δ histogram directly from this table on
+every call to strategy.arbitrage.find_hedged_pairs (no separate refresh
+step needed).
 
 Reading extraction rules:
   - Narrow brackets (e.g. Kalshi "85° to 86°", Polymarket "84-85°F"):
@@ -36,8 +36,7 @@ from clients.kalshi import KalshiClient
 from clients.polymarket import PolymarketClient
 from config import CITIES
 from persistence import db
-# Reuse the proven settlement-fetching helpers from the backtest module
-from backtests.run_settlement_backtest import (
+from bin._settlement_fetchers import (
   fetch_all_settled_kalshi_events,
   fetch_all_closed_weather_events,
   kalshi_event_date,
@@ -57,20 +56,23 @@ log = logging.getLogger(__name__)
 
 def reading_or_none(degrees: list[int], label: str) -> int | None:
   """
-  Return a deterministic integer "reading" for a closed bracket, or None
-  for open-ended brackets ("X or above" / "X or below") which can't pin
-  the venue's reading to a single value.
+  Return a deterministic integer "reading" for a winning bracket.
 
-  We use the LOW edge (min(degrees)) instead of the midpoint. Midpoints
-  with banker's rounding produce systematic ±1°F bias because Kalshi
-  brackets (X° to X+1°) and Polymarket brackets (X-X+1°F) have offset
-  alignments. The low edge is invariant to alignment and gives a stable
-  Δ statistic with bounded artifact (≤ 1°F bracket-alignment noise).
+  Closed brackets ("X° to Y°"): use min(degrees) — the LOW edge is
+  invariant to Kalshi's odd vs Polymarket's even bracket alignment, so
+  midpoint banker's-rounding can't introduce ±1°F bias into the Δ stat.
+
+  Open-ended brackets ("X° or above" / "X° or below"): use the BOUNDARY
+  rather than dropping the row. "88° or above" → 88 (the strict lower
+  bound); "72° or below" → 72 (the strict upper bound). The actual
+  reading may be off by up to TAIL_SPREAD °F, but the boundary is the
+  most conservative single value consistent with the resolution and
+  keeps the (city, date) row in the dataset.
   """
   if not degrees:
     return None
-  if ABOVE_RE.search(label) or BELOW_RE.search(label):
-    return None
+  if BELOW_RE.search(label):
+    return max(degrees)
   return min(degrees)
 
 

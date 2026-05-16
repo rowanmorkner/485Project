@@ -1,0 +1,73 @@
+{
+  "strategy_name": "structural_bracket_math_arb",
+  "diagnostics": {
+    "raw_top_of_book_arbs": 2155,
+    "fillable_at_min_size": 2071,
+    "illusory_due_to_depth": 84,
+    "distinct_at_size_5": 28,
+    "distinct_at_size_10": 27,
+    "distinct_at_size_25": 26,
+    "distinct_at_size_50": 23,
+    "distinct_total": 28
+  },
+  "iterations": [
+    {
+      "version": "v1",
+      "n_trades": 15,
+      "n_winners": 2,
+      "win_rate": 0.1333,
+      "total_pnl_dollars": -58.133,
+      "avg_pnl_per_trade": -3.8755,
+      "median_pnl_per_trade": -3.2633,
+      "sharpe_per_trade": -0.7907,
+      "max_drawdown_dollars": -58.133,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "time_stop": 13,
+        "hold_to_settle_worstcase": 1,
+        "target": 1
+      },
+      "raw_signal_count": 1589,
+      "notes": "Strict worst-case structural arb (loss zone empty, total ask < $1) with mark-to-market exit (target +$0.05/pair, time stop 240m). Expected to underperform: structural guarantee only realises at settlement, and MtM closes pay the bid-ask spread on both legs."
+    },
+    {
+      "version": "v2",
+      "n_trades": 15,
+      "n_winners": 15,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 139.8828,
+      "avg_pnl_per_trade": 9.3255,
+      "median_pnl_per_trade": 2.3795,
+      "sharpe_per_trade": 0.6843,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 15
+      },
+      "raw_signal_count": 1589,
+      "worst_case_pnl_dollars": 40.3217,
+      "notes": "Same selection as v1 (structural arbs only) but scored by HOLD-TO-SETTLEMENT payout: $1 + $1*1{T \u2208 win_2}. Expected PnL uses NWS PDF for E[1{T \u2208 win_2}]; worst-case assumes win_2 never realises ($1 payout/pair)."
+    },
+    {
+      "version": "v3",
+      "n_trades": 114,
+      "n_winners": 10,
+      "win_rate": 0.0877,
+      "total_pnl_dollars": 867.3827,
+      "avg_pnl_per_trade": 7.6086,
+      "median_pnl_per_trade": 4.393,
+      "sharpe_per_trade": 1.1109,
+      "max_drawdown_dollars": -2658.9663,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 114
+      },
+      "raw_signal_count": 10108,
+      "worst_case_pnl_dollars": -2650.0163,
+      "notes": "Structural pairs (loss zone empty), filtered by expected edge >= $0.05/pair after fees using NWS PDF. Allows entry cost > $1 if win_2 bonus mass justifies it. Scored by hold-to-settle ($1 + 1{T \u2208 win_2}); both expected (PDF) and worst-case ($1 payout) PnL reported."
+    }
+  ]
+}

@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterator
 
-from contracts import ArbOpportunity, OrderRequest
+from contracts import HedgedPair, OrderRequest
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -166,15 +166,23 @@ def log_order(order: OrderRequest, arb_pair_id: str | None = None) -> int:
   responsible for updating status to 'filled'/'cancelled'/'rejected' and
   inserting fills via record_fill().
 
-  City and date are denormalized off the embedded ArbOpportunity so the
-  pnl join in bin/settle_orders.py is fast.
+  City and date are denormalized off the embedded HedgedPair so the pnl
+  join in bin/settle_orders.py is fast. The serialized opp_json includes
+  a leg-specific 'degrees' field so bin/settle_orders.py can resolve
+  win/loss against the venue's settled high without venue-side branching.
 
-  arb_pair_id: shared UUID for the two legs of a paired-arb position.
-    Pass None for single-leg value trades.
+  arb_pair_id: shared UUID for the two legs of a hedged position.
   """
   opp = order.source_opportunity
   if opp is None:
     raise ValueError("OrderRequest must carry source_opportunity for logging")
+  # Pick the leg's degrees off the HedgedPair so pnl resolution is uniform.
+  leg_degrees = (
+    opp.kalshi_degrees if order.venue == "kalshi" else opp.poly_degrees
+  )
+  payload = asdict(opp)
+  payload["degrees"] = list(leg_degrees)
+  payload["venue"] = order.venue
   with connect() as conn:
     cur = conn.execute(
       """
@@ -188,7 +196,7 @@ def log_order(order: OrderRequest, arb_pair_id: str | None = None) -> int:
        opp.city, opp.date, order.venue, order.market_id,
        order.side, order.action,
        order.price, order.size, order.expected_edge,
-       json.dumps(asdict(opp)), arb_pair_id),
+       json.dumps(payload), arb_pair_id),
     )
     return cur.lastrowid or 0
 
