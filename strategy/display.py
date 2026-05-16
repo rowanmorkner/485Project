@@ -1,71 +1,25 @@
 """
-Console pretty-printing for distribution comparisons.
-
-Kept separate from arbitrage detection so the analytical layer never
-depends on stdout side effects.
+Console pretty-printing for HedgedPair selections.
 """
 
-from strategy.distributions import build_cdf, cdf_at
+from contracts import HedgedPair
 
 
-# Per-degree spread above which we mark a row as "diverging"
-HIGHLIGHT_THRESHOLD = 0.05
-
-
-def display_comparison(
-  kalshi_dist: dict[int, float],
-  poly_dist: dict[int, float],
-  forecast_dist: dict[int, float],
-):
-  """
-  Print side-by-side PMF and CDF tables for the three distributions.
-  Rows where any pair of sources differs by >= HIGHLIGHT_THRESHOLD are flagged.
-  """
-  k_cdf = build_cdf(kalshi_dist)
-  p_cdf = build_cdf(poly_dist)
-  f_cdf = build_cdf(forecast_dist)
-
-  # Union of all degrees present in any source
-  all_degrees = sorted(
-    set(kalshi_dist.keys()) | set(poly_dist.keys()) | set(forecast_dist.keys())
-  )
-
-  if not all_degrees:
-    print("  No data to display.")
+def display_hedged_pairs(pairs: list[HedgedPair]) -> None:
+  """Print accepted hedged pairs in a flat tabular format."""
+  if not pairs:
+    print("  No hedged pairs found above threshold.")
     return
 
-  # ── PMF table ──
-  print("\n" + "=" * 78)
-  print("  PROBABILITY MASS FUNCTION (per-degree)")
-  print("=" * 78)
-  print(f"  {'Deg':>4}  {'Kalshi':>8}  {'Poly':>8}  {'NWS':>8}  {'Spread':>8}  {'Flag':>5}")
-  print(f"  {'-' * 72}")
-
-  for deg in all_degrees:
-    k = kalshi_dist.get(deg, 0.0)
-    p = poly_dist.get(deg, 0.0)
-    f = forecast_dist.get(deg, 0.0)
-    spread = max(k, p, f) - min(k, p, f)
-    flag = " ***" if spread >= HIGHLIGHT_THRESHOLD else ""
+  print()
+  print(f"  {'City':<14} {'Date':<11} {'K leg':<24} {'P leg':<22} "
+        f"{'Cost':>7} {'E[pay]':>7} {'q05':>6}")
+  print("  " + "-" * 99)
+  for h in pairs:
+    k_leg = f"{h.kalshi_side.upper()} {h.kalshi_label}"
+    p_leg = f"{h.poly_side.upper()} {h.poly_label}"
     print(
-      f"  {deg:>4}°F  {k:>8.4f}  {p:>8.4f}  {f:>8.4f}  {spread:>8.4f}  {flag}"
+      f"  {h.city:<14} {h.date:<11} {k_leg:<24.24} {p_leg:<22.22} "
+      f"{h.cost_per_pair:>7.4f} {h.expected_payoff:>7.4f} {h.q05_payoff:>6.4f}"
     )
-
-  # ── CDF table ──
-  print("\n" + "=" * 78)
-  print("  CUMULATIVE DISTRIBUTION FUNCTION")
-  print("=" * 78)
-  print(f"  {'Deg':>4}  {'K CDF':>8}  {'P CDF':>8}  {'F CDF':>8}  {'Spread':>8}  {'Flag':>5}")
-  print(f"  {'-' * 72}")
-
-  for deg in all_degrees:
-    k_c = cdf_at(k_cdf, deg)
-    p_c = cdf_at(p_cdf, deg)
-    f_c = cdf_at(f_cdf, deg)
-    spread = max(k_c, p_c, f_c) - min(k_c, p_c, f_c)
-    flag = " ***" if spread >= HIGHLIGHT_THRESHOLD else ""
-    print(
-      f"  {deg:>4}°F  {k_c:>8.4f}  {p_c:>8.4f}  {f_c:>8.4f}  {spread:>8.4f}  {flag}"
-    )
-
   print()

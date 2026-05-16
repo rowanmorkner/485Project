@@ -1,0 +1,113 @@
+{
+  "strategy_name": "limit_order_market_making",
+  "iterations": [
+    {
+      "n_trades": 99,
+      "n_winners": 59,
+      "win_rate": 0.596,
+      "total_pnl_dollars": -55.03,
+      "avg_pnl_per_trade": -0.555859,
+      "median_pnl_per_trade": 0.0,
+      "sharpe_per_trade": -0.4618,
+      "max_drawdown_dollars": -55.13,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "filled": 68,
+        "forced_close_eow": 31
+      },
+      "posts_total": 4787,
+      "posts_filled_entry": 99,
+      "entry_fill_rate": 0.0207,
+      "n_filled_round_trips": 68,
+      "filled_round_trips_pnl": 3.7,
+      "filled_round_trips_avg_pnl": 0.054412,
+      "n_eow_forced_close": 31,
+      "eow_forced_close_pnl": -58.73,
+      "eow_forced_close_avg_pnl": -1.894516,
+      "version": "v1",
+      "notes": "Aggressive fill model (best_yes_ask <= my_bid). No cancel-on-move. Loose liquidity filter. Upper bound: this overstates fills because real queue priority would block us behind existing orders."
+    },
+    {
+      "n_trades": 62,
+      "n_winners": 34,
+      "win_rate": 0.5484,
+      "total_pnl_dollars": -34.61,
+      "avg_pnl_per_trade": -0.558226,
+      "median_pnl_per_trade": 0.0,
+      "sharpe_per_trade": -0.503,
+      "max_drawdown_dollars": -34.61,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "filled": 40,
+        "forced_close_eow": 22
+      },
+      "posts_total": 1941,
+      "posts_filled_entry": 62,
+      "entry_fill_rate": 0.0319,
+      "n_filled_round_trips": 40,
+      "filled_round_trips_pnl": 3.3,
+      "filled_round_trips_avg_pnl": 0.0825,
+      "n_eow_forced_close": 22,
+      "eow_forced_close_pnl": -37.91,
+      "eow_forced_close_avg_pnl": -1.723182,
+      "version": "v2",
+      "notes": "Cautious fill model (best_yes_ask STRICTLY < my_bid). Cancel-on-move at 2c adverse mid drift. Tighter liquidity filter (spread <= 4c, mid 0.08-0.92, depth 10)."
+    },
+    {
+      "n_trades": 49,
+      "n_winners": 32,
+      "win_rate": 0.6531,
+      "total_pnl_dollars": -15.75,
+      "avg_pnl_per_trade": -0.321429,
+      "median_pnl_per_trade": 0.0,
+      "sharpe_per_trade": -0.3524,
+      "max_drawdown_dollars": -15.85,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "filled": 36,
+        "forced_close_eow": 13
+      },
+      "posts_total": 520,
+      "posts_filled_entry": 49,
+      "entry_fill_rate": 0.0942,
+      "n_filled_round_trips": 36,
+      "filled_round_trips_pnl": 2.2,
+      "filled_round_trips_avg_pnl": 0.061111,
+      "n_eow_forced_close": 13,
+      "eow_forced_close_pnl": -17.95,
+      "eow_forced_close_avg_pnl": -1.380769,
+      "version": "v3",
+      "notes": "Volume-aware fill model: at-or-below-my-bid ask size must shrink snap-to-snap. Cancel-on-move at 2c (cancel buy; re-quote sell, no flatten). Strict filter (spread <= 3c, mid 0.10-0.90, depth 30). 1 concurrent per bracket."
+    },
+    {
+      "n_trades": 40,
+      "n_winners": 27,
+      "win_rate": 0.675,
+      "total_pnl_dollars": -13.93,
+      "avg_pnl_per_trade": -0.34825,
+      "median_pnl_per_trade": 0.0,
+      "sharpe_per_trade": -0.3476,
+      "max_drawdown_dollars": -13.93,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "filled": 30,
+        "forced_close_eow": 10
+      },
+      "posts_total": 484,
+      "posts_filled_entry": 40,
+      "entry_fill_rate": 0.0826,
+      "n_filled_round_trips": 30,
+      "filled_round_trips_pnl": 1.5,
+      "filled_round_trips_avg_pnl": 0.05,
+      "n_eow_forced_close": 10,
+      "eow_forced_close_pnl": -15.43,
+      "eow_forced_close_avg_pnl": -1.543,
+      "version": "v4",
+      "notes": "v3 + drift filter: skip brackets where the last 3 mids spanned > 3c (informed flow proxy). Tighter buy-cancel at 1.5c. Skip the last 90 min of the trading window."
+    }
+  ]
+}

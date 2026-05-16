@@ -163,6 +163,17 @@ def _midpoint_price(bid: Optional[float], ask: Optional[float]) -> Optional[floa
 
 # ── Quote parsers (executable bid/ask + depth) ────────────────────────────
 
+def _detect_tail(label: str) -> tuple[bool, bool, int | None]:
+  """Detect tail bracket from label. Returns (below, above, boundary)."""
+  m = re.search(r"(\d+)°?\s*F?\s*or\s+(below|lower|less)", label, re.IGNORECASE)
+  if m:
+    return True, False, int(m.group(1))
+  m = re.search(r"(\d+)°?\s*F?\s*or\s+(above|higher|more)", label, re.IGNORECASE)
+  if m:
+    return False, True, int(m.group(1))
+  return False, False, None
+
+
 def parse_kalshi_quotes(brackets: list[dict]) -> list[BracketQuote]:
   """
   Convert raw Kalshi bracket dicts into BracketQuote objects.
@@ -177,6 +188,7 @@ def parse_kalshi_quotes(brackets: list[dict]) -> list[BracketQuote]:
     if not degrees:
       logger.warning("Could not parse Kalshi subtitle for quote: '%s'", subtitle)
       continue
+    tail_below, tail_above, boundary = _detect_tail(subtitle)
 
     quotes.append(BracketQuote(
       venue="kalshi",
@@ -189,6 +201,9 @@ def parse_kalshi_quotes(brackets: list[dict]) -> list[BracketQuote]:
       ask_size=float(b.get("best_yes_ask_size", 0) or 0),
       ladder_bids=b.get("yes_bid_ladder", []),
       ladder_asks=b.get("yes_ask_ladder", []),
+      tail_below=tail_below,
+      tail_above=tail_above,
+      boundary=boundary,
     ))
   return quotes
 
@@ -204,6 +219,7 @@ def parse_polymarket_quotes(brackets: list[dict]) -> list[BracketQuote]:
     if not degrees:
       logger.warning("Could not parse Polymarket question for quote: '%s'", question)
       continue
+    tail_below, tail_above, boundary = _detect_tail(question)
 
     quotes.append(BracketQuote(
       venue="polymarket",
@@ -214,7 +230,11 @@ def parse_polymarket_quotes(brackets: list[dict]) -> list[BracketQuote]:
       best_ask=b.get("best_yes_ask"),
       bid_size=float(b.get("best_yes_bid_size", 0) or 0),
       ask_size=float(b.get("best_yes_ask_size", 0) or 0),
+      condition_id=b.get("condition_id", "") or "",
       ladder_bids=b.get("yes_bid_ladder", []),
       ladder_asks=b.get("yes_ask_ladder", []),
+      tail_below=tail_below,
+      tail_above=tail_above,
+      boundary=boundary,
     ))
   return quotes

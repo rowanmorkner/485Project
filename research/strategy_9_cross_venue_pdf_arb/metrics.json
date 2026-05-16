@@ -1,0 +1,104 @@
+{
+  "strategy_name": "cross_venue_pdf_arb",
+  "diagnostics": {
+    "per_city_delta_n": {
+      "Miami": 61,
+      "LA": 31,
+      "Austin": 18,
+      "San Francisco": 29,
+      "Seattle": 49
+    },
+    "min_city_delta_n_for_per_city_hist": 30,
+    "default_pair_size": 25,
+    "fee_per_contract": 0.005,
+    "settlement_data_for_2026_05_06": "absent \u2014 PnL is E[under joint K,P]"
+  },
+  "iterations": [
+    {
+      "version": "v1",
+      "n_trades": 56,
+      "n_winners": 54,
+      "win_rate": 0.9643,
+      "total_pnl_dollars": 68.6525,
+      "avg_pnl_per_trade": 1.2259,
+      "median_pnl_per_trade": 0.9973,
+      "sharpe_per_trade": 1.2127,
+      "max_drawdown_dollars": -0.2859,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 56
+      },
+      "total_q05_pnl_dollars": -489.7424,
+      "avg_q05_pnl": -8.7454,
+      "notes": "Directional single-leg using cross-venue translated-PMF mispricings. Threshold=0.05 (gap > 5\u00a2 between FV under translated other-venue PMF and market price). Hold-to-settle scoring under joint K,P built from the live venue-implied K-PMF and city \u0394 histogram. NO hedge \u2014 expected to be exposed to venue-divergence risk."
+    },
+    {
+      "version": "v2",
+      "n_trades": 6,
+      "n_winners": 6,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 6.4879,
+      "avg_pnl_per_trade": 1.0813,
+      "median_pnl_per_trade": 0.8272,
+      "sharpe_per_trade": 1.8031,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 6
+      },
+      "total_q05_pnl_dollars": -0.1512,
+      "avg_q05_pnl": -0.0252,
+      "skipped_no_hedge": 797,
+      "skipped_negative_e": 695,
+      "skipped_q05": 1874,
+      "notes": "Hedged pair: each cross-venue PDF disagreement is paired with an opposite-side hedge on the OTHER venue at the \u0394-shifted bracket. Filter: E[payout] > 0 AND q05[payout] >= -$1/pair (CVaR-style). Joint distribution = venue-implied pmf_K convolved with \u0394 histogram."
+    },
+    {
+      "version": "v3",
+      "n_trades": 6,
+      "n_winners": 6,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 6.4879,
+      "avg_pnl_per_trade": 1.0813,
+      "median_pnl_per_trade": 0.8272,
+      "sharpe_per_trade": 1.8031,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 6
+      },
+      "total_q05_pnl_dollars": -0.1512,
+      "avg_q05_pnl": -0.0252,
+      "skipped_no_hedge": 635,
+      "skipped_negative_e": 630,
+      "skipped_q05": 1393,
+      "skipped_nws_disagree": 709,
+      "notes": "Two-prior agreement: only enter if cross-venue gap AND NWS PDF agree directionally on the bracket being underpriced. Then hedge as in v2. Strictest filter."
+    },
+    {
+      "version": "v4",
+      "n_trades": 6,
+      "n_winners": 6,
+      "win_rate": 1.0,
+      "total_pnl_dollars": 7.9785,
+      "avg_pnl_per_trade": 1.3298,
+      "median_pnl_per_trade": 1.4224,
+      "sharpe_per_trade": 2.5192,
+      "max_drawdown_dollars": 0.0,
+      "settled_n": 0,
+      "settled_pnl_dollars": 0.0,
+      "exit_reason_counts": {
+        "hold_to_settle": 6
+      },
+      "total_q05_pnl_dollars": 2.3233,
+      "avg_q05_pnl": 0.3872,
+      "skipped_no_hedge": 1281,
+      "skipped_negative_e": 1001,
+      "skipped_q05": 2195,
+      "notes": "Strict-structural quality hedged pairs: only entries where the 5%-quantile payout is non-negative. This makes each pair a 'cannot-lose-much-at-worst' position under the joint K,P distribution. Threshold loosened to 3\u00a2 since the q05 filter does most of the work."
+    }
+  ]
+}
