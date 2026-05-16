@@ -27,8 +27,8 @@ import numpy as np
 import pandas as pd
 import requests
 
-from .dataset import CITIES, DAILY_VARS, HOURLY_VARS, city_slug
-from .models import (EnsembleModel, HeteroscedasticRidgeModel,
+from dataset import CITIES, DAILY_VARS, HOURLY_VARS, city_slug
+from models import (EnsembleModel, HeteroscedasticRidgeModel,
                      NGBoostNormalModel, XGBMeanVarModel)
 
 LIVE_URL = "https://api.open-meteo.com/v1/forecast"
