@@ -57,8 +57,5 @@ bin/_cache/
 # Bot logs (rotated daily)
 logs/
 
-# Screenshots / scratch
-Screenshot*.png
-
 # Local-only project instructions
 CLAUDE.md
