@@ -28,27 +28,36 @@ class Forecast:
     std_dev: Optional[float] = None   # uncertainty estimate, °F
 
 
-def gaussian_to_pmf(
-    mean_f: float, std_f: float,
-    lo: int = -20, hi: int = 130, eps: float = 1e-6,
-) -> dict[int, float]:
-    """Discretize N(mean_f, std_f) into per-integer-°F probability mass.
-    Uses bin-integral form: P(T=t) = Φ((t+0.5-μ)/σ) - Φ((t-0.5-μ)/σ).
-    Matches the unit-width bins that Kalshi strikes use."""
+def gaussian_to_pmf(mean_f, std_f, lo=-20, hi=130, eps=1e-6):
+    """
+    Convert a continuous Gaussian (μ, σ) into a discrete probability mass
+    function over integer-°F temperature bins.
+    """
     if std_f <= 0:
         raise ValueError(f"std_f must be positive, got {std_f}")
+
+    # build the full range of integer °F values
     temps = np.arange(lo, hi + 1)
+
+    # norm.cdf returns P(temperature <= x) under our predicted Gaussian
     upper = norm.cdf(temps + 0.5, loc=mean_f, scale=std_f)
+    # Same idea for the LOWER edge (t - 0.5°F).
     lower = norm.cdf(temps - 0.5, loc=mean_f, scale=std_f)
+
+    # the probability mass inside a one-degree bin is the difference
     mass = upper - lower
-    mass = mass / mass.sum()  # renormalize for tail truncation
+
+    # renormalize so probabilities sum to exactly 1.0
+    mass = mass / mass.sum()
+
+    # Return a dict {temp: probability}, dropping bins with negligible mass
     return {int(t): float(m) for t, m in zip(temps, mass) if m > eps}
 
 
 # ===== Metrics on Gaussian (mean, std) =====
 
 def crps_gaussian(y_true, mean, std):
-    """Closed-form CRPS for N(mean, std). Lower is better."""
+    #CRPS
     z = (y_true - mean) / std
     return std * (z * (2 * norm.cdf(z) - 1) + 2 * norm.pdf(z) - 1.0 / np.sqrt(np.pi))
 
