@@ -39,21 +39,56 @@ def train_one_city(city_name: str) -> dict:
     X_train, y_train = train[feat], train[TARGET]
     X_test,  y_test  = test[feat],  test[TARGET]
 
+    # Carve val tail from train: components fit on sub-train, σ-calibrate
+    # and learn ensemble weights on val. Then refit on full train and transfer
+    # the calibration scalars + weights over.
+    val_frac = 0.2
+    n_val = max(int(len(X_train) * val_frac), 30)
+    X_sub, y_sub = X_train.iloc[:-n_val], y_train.iloc[:-n_val]
+    X_val, y_val = X_train.iloc[-n_val:], y_train.iloc[-n_val:]
+
     print(f"\n{'=' * 78}")
-    print(f"  {city_name}: train={len(train)}  test={len(test)}  "
-          f"features={len(feat)}")
-    print(f"  train: {train.index.min().date()} → {train.index.max().date()}")
-    print(f"  test : {test.index.min().date()} → {test.index.max().date()}")
+    print(f"  {city_name}: sub_train={len(X_sub)}  val={len(X_val)}  "
+          f"test={len(test)}  features={len(feat)}")
+    print(f"  sub-train: {X_sub.index.min().date()} → {X_sub.index.max().date()}")
+    print(f"       val: {X_val.index.min().date()} → {X_val.index.max().date()}")
+    print(f"      test: {X_test.index.min().date()} → {X_test.index.max().date()}")
     print(f"{'=' * 78}")
 
-    # Fit models
-    print("  Fitting Ridge...")
+    # Fit on sub-train, calibrate σ on val
+    print("  Fitting Ridge on sub-train...")
+    ridge_sub = HeteroscedasticRidgeModel().fit(X_sub, y_sub)
+    ridge_sub.calibrate(X_val, y_val)
+    print(f"    mean offset: {ridge_sub.mean_offset_:+.3f}°F  "
+          f"σ-scale: {ridge_sub.sigma_scale_:.3f}")
+
+    print("  Fitting XGBoost on sub-train...")
+    xgb_sub = XGBMeanVarModel().fit(X_sub, y_sub)
+    xgb_sub.calibrate(X_val, y_val)
+    print(f"    mean offset: {xgb_sub.mean_offset_:+.3f}°F  "
+          f"σ-scale: {xgb_sub.sigma_scale_:.3f}")
+
+    print("  Fitting NGBoost on sub-train...")
+    ngb_sub = NGBoostNormalModel().fit(X_sub, y_sub)
+    ngb_sub.calibrate(X_val, y_val)
+    print(f"    mean offset: {ngb_sub.mean_offset_:+.3f}°F  "
+          f"σ-scale: {ngb_sub.sigma_scale_:.3f}")
+
+    # Compute ensemble weights on val (calibrated components)
+    ens_sub = EnsembleModel([ridge_sub, xgb_sub, ngb_sub])
+    weights = ens_sub.set_weights_from_validation(X_val, y_val, score="crps")
+    print(f"  Ensemble weights (CRPS-derived): "
+          f"Ridge={weights[0]:.2f}  XGB={weights[1]:.2f}  NGB={weights[2]:.2f}")
+
+    # Refit on full train; transfer calibration scalars
+    print("  Refitting components on full train...")
     ridge = HeteroscedasticRidgeModel().fit(X_train, y_train)
-    print("  Fitting XGBoost...")
+    ridge.mean_offset_, ridge.sigma_scale_ = ridge_sub.mean_offset_, ridge_sub.sigma_scale_
     xgb = XGBMeanVarModel().fit(X_train, y_train)
-    print("  Fitting NGBoost...")
+    xgb.mean_offset_, xgb.sigma_scale_ = xgb_sub.mean_offset_, xgb_sub.sigma_scale_
     ngb = NGBoostNormalModel().fit(X_train, y_train)
-    ensemble = EnsembleModel([ridge, xgb, ngb])
+    ngb.mean_offset_, ngb.sigma_scale_ = ngb_sub.mean_offset_, ngb_sub.sigma_scale_
+    ensemble = EnsembleModel([ridge, xgb, ngb], weights=weights)
 
     # Predict
     r_mu, r_sd = ridge.predict_mean_std(X_test)

@@ -20,19 +20,23 @@ Limitations to be aware of:
 """
 from __future__ import annotations
 
+import json
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import requests
 
-from dataset import CITIES, DAILY_VARS, HOURLY_VARS, city_slug
-from models import (EnsembleModel, HeteroscedasticRidgeModel,
+from .dataset import (ARCHIVE_LAG_DAYS, CITIES, DAILY_VARS, HOURLY_VARS,
+                      add_lag_features, city_slug, fetch_archive_features)
+from .models import (EnsembleModel, HeteroscedasticRidgeModel,
                      NGBoostNormalModel, XGBMeanVarModel)
 
 LIVE_URL = "https://api.open-meteo.com/v1/forecast"
 DATASETS_DIR = Path("data/datasets")
+LIVE_OFFSETS_DIR = Path("data/calibration")
 TARGET = "tmax_actual"
 
 
@@ -48,9 +52,9 @@ def fetch_live_features(city_name: str) -> pd.DataFrame:
         "temperature_unit": "fahrenheit",
         "precipitation_unit": "inch",
         "windspeed_unit": "mph",
-        # Yesterday + today + tomorrow + day-after gives enough feature rows
-        # to predict the next ~3 target tmax days using the day-ahead model.
-        "past_days": 1,
+        # past_days=2 gives lag-1 coverage for "today" even at the earliest
+        # possible run time; forecast_days=3 covers tomorrow + the next two.
+        "past_days": 2,
         "forecast_days": 3,
     }
     resp = requests.get(LIVE_URL, params=params, timeout=60)
@@ -72,11 +76,115 @@ def fetch_live_features(city_name: str) -> pd.DataFrame:
     features["doy_sin"] = np.sin(2 * np.pi * doy / 365.25)
     features["doy_cos"] = np.cos(2 * np.pi * doy / 365.25)
 
-    return features.sort_index()
+    features = features.sort_index()
+    features = add_lag_features(features, n_lags=1)
+    return features
+
+
+def calibrate_live_features(city_name: str, lookback_days: int = 60) -> dict:
+    """Compute per-feature mean offsets between archive (training) features
+    and live forecast-API features over a recent overlap window.
+
+    Saves a JSON file under ``data/calibration/`` keyed by feature name and
+    returns the offsets dict. ``apply_live_offsets`` adds these offsets to
+    live features at inference time so they better match the training
+    distribution (which comes from ERA5 reanalysis).
+    """
+    cfg = CITIES[city_name]
+    end_date = date.today() - timedelta(days=ARCHIVE_LAG_DAYS)
+    start_date = end_date - timedelta(days=lookback_days)
+
+    print(f"\n--- Calibrating {city_name} "
+          f"[{start_date.isoformat()} → {end_date.isoformat()}] ---")
+
+    # Live features for the same window via the forecast API.
+    params = {
+        "latitude": cfg["lat"],
+        "longitude": cfg["lon"],
+        "daily": ",".join(DAILY_VARS),
+        "hourly": ",".join(HOURLY_VARS),
+        "timezone": cfg["timezone"],
+        "temperature_unit": "fahrenheit",
+        "precipitation_unit": "inch",
+        "windspeed_unit": "mph",
+        "past_days": lookback_days,
+        "forecast_days": 1,
+    }
+    resp = requests.get(LIVE_URL, params=params, timeout=120)
+    resp.raise_for_status()
+    data = resp.json()
+
+    daily = pd.DataFrame(data["daily"])
+    daily["time"] = pd.to_datetime(daily["time"])
+    daily = daily.set_index("time")
+
+    hourly = pd.DataFrame(data["hourly"])
+    hourly["time"] = pd.to_datetime(hourly["time"])
+    hourly_daily = hourly.set_index("time").resample("D").mean()
+
+    live = daily.join(hourly_daily)
+    live.index.name = "date"
+    doy = live.index.dayofyear
+    live["doy_sin"] = np.sin(2 * np.pi * doy / 365.25)
+    live["doy_cos"] = np.cos(2 * np.pi * doy / 365.25)
+    live = live.sort_index()
+    live = add_lag_features(live, n_lags=1)
+
+    # Archive (ERA5) features over the same window.
+    arch = fetch_archive_features(
+        cfg["lat"], cfg["lon"],
+        start_date.isoformat(), end_date.isoformat(),
+        cfg["timezone"],
+    )
+    arch = add_lag_features(arch, n_lags=1)
+
+    # Per-feature mean offset (archive minus live) on the overlapping index.
+    common_idx = arch.index.intersection(live.index)
+    offsets: dict[str, float] = {}
+    for col in arch.columns:
+        if col in ("doy_sin", "doy_cos"):
+            continue
+        if col not in live.columns:
+            continue
+        diffs = (arch.loc[common_idx, col] - live.loc[common_idx, col]).dropna()
+        if len(diffs) >= 10:
+            offsets[col] = float(diffs.mean())
+
+    LIVE_OFFSETS_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = LIVE_OFFSETS_DIR / f"{city_slug(city_name)}_live_offsets.json"
+    with open(out_path, "w") as f:
+        json.dump(offsets, f, indent=2, sort_keys=True)
+    print(f"  Saved {len(offsets)} offsets → {out_path}")
+
+    return offsets
+
+
+def apply_live_offsets(features: pd.DataFrame, city_name: str) -> pd.DataFrame:
+    """Add saved per-feature offsets to live features (no-op if missing)."""
+    path = LIVE_OFFSETS_DIR / f"{city_slug(city_name)}_live_offsets.json"
+    if not path.exists():
+        print(f"  No live-offset calibration found for {city_name}; "
+              f"using raw live features.")
+        return features
+
+    with open(path) as f:
+        offsets = json.load(f)
+
+    corrected = features.copy()
+    applied = 0
+    for col, off in offsets.items():
+        if col in corrected.columns:
+            corrected[col] = corrected[col] + off
+            applied += 1
+    print(f"  Applied {applied} live-feature offsets.")
+    return corrected
 
 
 def train_ensemble(city_name: str):
-    """Train the ensemble on ALL historical data for the city (no holdout)."""
+    """Train the ensemble. Components fit on sub-train (first 80%), σ-calibrate
+    and learn ensemble weights on a val tail (last 20%), then refit on full
+    data — calibration scalars and weights carry over to the deployed model.
+    """
     slug = city_slug(city_name)
     parquet_path = DATASETS_DIR / f"{slug}.parquet"
     if not parquet_path.exists():
@@ -90,10 +198,31 @@ def train_ensemble(city_name: str):
     print(f"  Training on {len(X)} rows "
           f"({df.index.min().date()} → {df.index.max().date()})")
 
+    # Carve val tail
+    val_frac = 0.2
+    n_val = max(int(len(X) * val_frac), 30)
+    X_sub, y_sub = X.iloc[:-n_val], y.iloc[:-n_val]
+    X_val, y_val = X.iloc[-n_val:], y.iloc[-n_val:]
+
+    # Sub-train fits + calibration on val
+    ridge_sub = HeteroscedasticRidgeModel().fit(X_sub, y_sub); ridge_sub.calibrate(X_val, y_val)
+    xgb_sub = XGBMeanVarModel().fit(X_sub, y_sub); xgb_sub.calibrate(X_val, y_val)
+    ngb_sub = NGBoostNormalModel().fit(X_sub, y_sub); ngb_sub.calibrate(X_val, y_val)
+
+    ens_sub = EnsembleModel([ridge_sub, xgb_sub, ngb_sub])
+    weights = ens_sub.set_weights_from_validation(X_val, y_val, score="crps")
+    print(f"  Ensemble weights (CRPS-derived): "
+          f"Ridge={weights[0]:.2f}  XGB={weights[1]:.2f}  NGB={weights[2]:.2f}")
+
+    # Refit on full data; transfer calibration scalars
     ridge = HeteroscedasticRidgeModel().fit(X, y)
+    ridge.mean_offset_, ridge.sigma_scale_ = ridge_sub.mean_offset_, ridge_sub.sigma_scale_
     xgb = XGBMeanVarModel().fit(X, y)
+    xgb.mean_offset_, xgb.sigma_scale_ = xgb_sub.mean_offset_, xgb_sub.sigma_scale_
     ngb = NGBoostNormalModel().fit(X, y)
-    ensemble = EnsembleModel([ridge, xgb, ngb])
+    ngb.mean_offset_, ngb.sigma_scale_ = ngb_sub.mean_offset_, ngb_sub.sigma_scale_
+
+    ensemble = EnsembleModel([ridge, xgb, ngb], weights=weights)
     return ensemble, feature_names, df
 
 
@@ -123,6 +252,7 @@ def predict_for(city_name: str, target_dates: list[str] | None = None):
 
     print("  Fetching live features...")
     live = fetch_live_features(city_name)
+    live = apply_live_offsets(live, city_name)
 
     today = pd.Timestamp.now(tz=CITIES[city_name]["timezone"]) \
               .normalize().tz_localize(None)
@@ -207,7 +337,24 @@ def display(fc, source_date) -> None:
 
 
 def main():
-    cities = sys.argv[1:] if len(sys.argv) > 1 else list(CITIES.keys())
+    args = sys.argv[1:]
+
+    # --calibrate-live: compute archive-vs-live offsets and exit.
+    if "--calibrate-live" in args:
+        args = [a for a in args if a != "--calibrate-live"]
+        cities = args if args else list(CITIES.keys())
+        for city in cities:
+            if city not in CITIES:
+                print(f"\nUnknown city: {city!r}")
+                print(f"Available: {list(CITIES.keys())}")
+                continue
+            try:
+                calibrate_live_features(city)
+            except Exception as e:
+                print(f"  ! Calibration failed for {city}: {e}")
+        return
+
+    cities = args if args else list(CITIES.keys())
     for city in cities:
         if city not in CITIES:
             print(f"\nUnknown city: {city!r}")

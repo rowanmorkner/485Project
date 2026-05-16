@@ -201,13 +201,18 @@ with tab_live:
 
     k_brackets, k_ts = data.latest_brackets(city, date, "kalshi")
     p_brackets, p_ts = data.latest_brackets(city, date, "polymarket")
-    pdf, fc_source, fc_ts = data.latest_forecast(city, date)
+    # Fetch each forecast source independently so the chart can show both
+    # the ensemble model and the NWS Gaussian fallback side-by-side. They
+    # often disagree, and seeing both makes the strategy's bets legible.
+    pdf_ens, _, fc_ens_ts = data.latest_forecast(city, date, source="ensemble")
+    pdf_nws, _, fc_nws_ts = data.latest_forecast(city, date, source="nws_normal")
     k_settle, p_settle = data.settlement_for(city, date)
 
     cap = []
     if k_ts: cap.append(f"Kalshi snapshot: {_humanize_age(k_ts)}")
     if p_ts: cap.append(f"Polymarket snapshot: {_humanize_age(p_ts)}")
-    if fc_ts: cap.append(f"Forecast ({fc_source}): {_humanize_age(fc_ts)}")
+    if fc_ens_ts: cap.append(f"Ensemble: {_humanize_age(fc_ens_ts)}")
+    if fc_nws_ts: cap.append(f"NWS normal: {_humanize_age(fc_nws_ts)}")
     if k_settle is not None or p_settle is not None:
       bits = []
       if k_settle is not None: bits.append(f"Kalshi {k_settle}°F")
@@ -228,8 +233,8 @@ with tab_live:
       fig.add_trace(go.Bar(
         x=df_k["center"], y=df_k["density"], width=df_k["width"],
         name="Kalshi YES (density)",
-        marker_color="#3B82F6", opacity=0.55,
-        marker_line=dict(width=1.5, color="#1E3A8A"),
+        marker_color="#3EE6B0", opacity=0.55,
+        marker_line=dict(width=1.5, color="#0F9D6E"),
         customdata=df_k[["label", "implied_prob", "width"]],
         hovertemplate=("<b>Kalshi</b> %{customdata[0]}<br>"
                        "Implied prob: %{customdata[1]:.3f}<br>"
@@ -240,35 +245,43 @@ with tab_live:
       fig.add_trace(go.Bar(
         x=df_p["center"], y=df_p["density"], width=df_p["width"],
         name="Polymarket YES (density)",
-        marker_color="#F59E0B", opacity=0.55,
-        marker_line=dict(width=1.5, color="#92400E"),
+        marker_color="#3B82F6", opacity=0.55,
+        marker_line=dict(width=1.5, color="#1E3A8A"),
         customdata=df_p[["label", "implied_prob", "width"]],
         hovertemplate=("<b>Polymarket</b> %{customdata[0]}<br>"
                        "Implied prob: %{customdata[1]:.3f}<br>"
                        "Width: %{customdata[2]:.0f}°F<br>"
                        "Density: %{y:.3f}/°F<extra></extra>"),
       ))
-    if pdf:
-      xs = sorted(pdf.keys())
-      ys = [pdf[x] for x in xs]
+    if pdf_ens:
+      xs = sorted(pdf_ens.keys())
+      ys = [pdf_ens[x] for x in xs]
       fig.add_trace(go.Scatter(
-        x=xs, y=ys, name=f"Forecast PDF ({fc_source})",
+        x=xs, y=ys, name="Forecast PDF (ensemble)",
         mode="lines+markers", line=dict(width=3, color="#10B981"),
         marker=dict(size=7),
+      ))
+    if pdf_nws:
+      xs = sorted(pdf_nws.keys())
+      ys = [pdf_nws[x] for x in xs]
+      fig.add_trace(go.Scatter(
+        x=xs, y=ys, name="Forecast PDF (nws_normal)",
+        mode="lines+markers", line=dict(width=2, color="#8B5CF6", dash="dot"),
+        marker=dict(size=6, symbol="diamond"),
       ))
     # Settled-high overlays — vertical lines for past resolutions so the
     # forecast and venue brackets can be evaluated against the outcome.
     if k_settle is not None:
-      fig.add_vline(x=k_settle, line_color="#1E3A8A", line_width=2,
+      fig.add_vline(x=k_settle, line_color="#0F9D6E", line_width=2,
                     annotation_text=f"Kalshi settled {k_settle}°F",
                     annotation_position="top",
-                    annotation_font_color="#1E3A8A")
+                    annotation_font_color="#0F9D6E")
     if p_settle is not None and p_settle != k_settle:
-      fig.add_vline(x=p_settle, line_color="#92400E", line_width=2,
+      fig.add_vline(x=p_settle, line_color="#1E3A8A", line_width=2,
                     line_dash="dash",
                     annotation_text=f"Polymarket settled {p_settle}°F",
                     annotation_position="bottom",
-                    annotation_font_color="#92400E")
+                    annotation_font_color="#1E3A8A")
     fig.update_layout(
       barmode="overlay",
       xaxis_title="Daily high (°F)",

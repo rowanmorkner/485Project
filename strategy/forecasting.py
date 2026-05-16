@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import logging
 import threading
+import time
 from datetime import date, datetime, timezone
 
 from strategy.distributions import forecast_to_distribution
@@ -33,6 +34,15 @@ logger = logging.getLogger(__name__)
 # Lock guards concurrent training under the parallel poll loop.
 _cache: dict[str, tuple] = {}
 _cache_lock = threading.Lock()
+
+# Per-city Open-Meteo live-features cache. Live features don't change
+# minute-to-minute and Open-Meteo's free tier rate-limits aggressive polling
+# (HTTP 429), which silently knocks the ensemble out and forces fallback to
+# nws_normal. TTL of 10 min trades inference freshness for staying under the
+# rate limit.
+_LIVE_FEATURES_TTL_SEC = 600
+_live_cache: dict[str, tuple[float, object]] = {}
+_live_cache_lock = threading.Lock()
 
 
 def _today_utc() -> date:
@@ -85,12 +95,38 @@ def get_forecast_pdf(
   return {}, "none"
 
 
+def _live_features_cached(city: str):
+  """TTL-cached wrapper around fetch_live_features. Caches BOTH successes
+  and failures for `_LIVE_FEATURES_TTL_SEC` so we never hit Open-Meteo
+  more than once per city per window. On a cached failure we re-raise
+  cheaply — without touching the network — which lets `_ensemble_pdf`
+  fall back to NWS instead of repeatedly hammering a rate-limited API."""
+  from modeling.predict import fetch_live_features
+  now = time.monotonic()
+  with _live_cache_lock:
+    entry = _live_cache.get(city)
+    if entry and (now - entry[0]) < _LIVE_FEATURES_TTL_SEC:
+      ts, val = entry
+      if val is None:
+        raise RuntimeError(f"open-meteo cooldown active for {city}")
+      return val
+  try:
+    live = fetch_live_features(city)
+  except Exception:
+    with _live_cache_lock:
+      _live_cache[city] = (time.monotonic(), None)
+    raise
+  with _live_cache_lock:
+    _live_cache[city] = (time.monotonic(), live)
+  return live
+
+
 def _ensemble_pdf(city: str, date_iso: str) -> dict[int, float]:
   """Try the ensemble path. Returns {} on any failure."""
   try:
     ensemble, feature_names, df_train, _ = _train_ensemble_cached(city)
-    from modeling.predict import fetch_live_features, predict_with
-    live = fetch_live_features(city)
+    from modeling.predict import predict_with
+    live = _live_features_cached(city)
     forecasts = predict_with(
       ensemble, feature_names, df_train, live, city, [date_iso]
     )

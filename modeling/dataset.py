@@ -139,6 +139,27 @@ HOURLY_VARS = [
     "soil_temperature_0_to_7cm", "soil_moisture_0_to_7cm",
 ]
 
+# Weather features that get a D-1 lag column. doy_sin/cos are deterministic
+# functions of the date and don't need lagging.
+LAG_FEATURES = DAILY_VARS + HOURLY_VARS
+
+
+def add_lag_features(features: pd.DataFrame, n_lags: int = 1) -> pd.DataFrame:
+    """Add k-day lag versions of weather features as new columns (`<col>_lag<k>`).
+
+    At inference, "today's" daily aggregates blend forecast-model hours
+    (ahead of now) with observation hours (before now). In the morning the
+    forecast-model fraction dominates, which differs from the ERA5 reanalysis
+    distribution the models were trained on. D-1 features are fully observed
+    regardless of inference time and give the model a stable anchor.
+    """
+    out = features.copy()
+    for k in range(1, n_lags + 1):
+        for col in LAG_FEATURES:
+            if col in features.columns:
+                out[f"{col}_lag{k}"] = features[col].shift(k)
+    return out
+
 
 def fetch_archive_features(lat, lon, start_date, end_date, timezone, timeout=120):
     """Pull atmospheric features from Open-Meteo's ERA5 reanalysis archive.
@@ -195,12 +216,14 @@ def build_dataset(city_name, start_date, end_date, output_dir="data/datasets"):
     features = fetch_archive_features(
         cfg["lat"], cfg["lon"], start_date, end_date, cfg["timezone"]
     )
-    print(f"    got {len(features)} rows × {features.shape[1]} cols")
+    features = add_lag_features(features, n_lags=1)
+    print(f"    got {len(features)} rows × {features.shape[1]} cols (incl. lag-1)")
 
     # Day-ahead shift
     joined = features.join(targets[["tmax_actual"]], how="inner").sort_index()
     joined["tmax_actual"] = joined["tmax_actual"].shift(-1)
-    df = joined.dropna(subset=["tmax_actual"])
+    lag_cols = [c for c in joined.columns if "_lag" in c]
+    df = joined.dropna(subset=["tmax_actual"] + lag_cols)
 
     out_path = Path(output_dir) / f"{slug}.parquet"
     out_path.parent.mkdir(parents=True, exist_ok=True)

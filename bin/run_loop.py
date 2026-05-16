@@ -11,11 +11,14 @@ let it run. The recursive train→evaluate→improve loop happens automatically:
      - In paper-trading mode (PAPER_TRADING=1, default in this script),
        each recommended order also gets a synthetic fill at intended price.
 
-  2. Once a day at TRAIN_HOUR_UTC, run the training pass:
+  2. At each hour in TRAIN_HOURS_UTC (default every 6h: 00, 06, 12, 18
+     UTC), run the training pass:
        a. log_settlements    — pulls newly-settled events from both venues
        b. settle_orders      — scores any filled orders against settlements
-     The strategy itself reads the empirical Δ histogram directly from
-     bot.db on every call; no separate refresh step is required.
+     Sweeping 4×/day catches D-1 settlements as soon as either venue
+     publishes them, so dashboard P&L stops being a day stale. The strategy
+     itself reads the empirical Δ histogram directly from bot.db on every
+     call; no separate refresh step is required.
 
 Start (foreground for testing):
   PAPER_TRADING=1 python -m bin.run_loop
@@ -66,13 +69,37 @@ from persistence import db  # noqa: E402
 # ── Configuration ────────────────────────────────────────────────────────
 
 POLL_INTERVAL_SEC = int(os.environ.get("POLL_INTERVAL_SEC", 60))       # 1 min
-TRAIN_HOUR_UTC    = int(os.environ.get("TRAIN_HOUR_UTC", 6))           # 06:00 UTC
+
+
+def _parse_train_hours(raw: str) -> list[int]:
+  hours: set[int] = set()
+  for part in raw.split(","):
+    part = part.strip()
+    if not part:
+      continue
+    try:
+      h = int(part)
+    except ValueError:
+      continue
+    if 0 <= h <= 23:
+      hours.add(h)
+  return sorted(hours) or [0, 6, 12, 18]
+
+
+# Comma-separated list of UTC hours to run the training pass. Default is
+# every 6 hours (00, 06, 12, 18) so D-1 settlements land in the dashboard
+# within a few hours of the venue publishing them.
+TRAIN_HOURS_UTC   = _parse_train_hours(os.environ.get("TRAIN_HOURS_UTC", "0,6,12,18"))
 LOG_DIR           = PROJECT_ROOT / "logs"
 LOG_FILE          = LOG_DIR / "bot.log"
 LOG_RETENTION_DAYS = 7
 
-# A small marker file holding the date string of the last successful training
-# pass. Cheap, persistent across restarts, no DB schema needed.
+# Marker file format: one line "YYYY-MM-DD H1 H2 ..." where the integers
+# are the scheduled training-hours that have already completed today.
+# Resets implicitly when the date rolls over. Cheap, persistent, no DB
+# schema needed. Old single-date markers ("YYYY-MM-DD") parse cleanly as
+# "no hours done yet today" — at worst we re-run training once after an
+# upgrade.
 TRAIN_MARKER = PROJECT_ROOT / "data" / ".last_training_date"
 
 
@@ -123,12 +150,12 @@ TRAINING_STEPS = [
 
 def run_training_pass(log: logging.Logger) -> None:
   """
-  Run the four daily jobs in sequence as subprocesses. Each is invoked
+  Run each training step in sequence as a subprocess. Each is invoked
   via `python -m <module>` so any sys.path / env quirks match the rest of
   the codebase. A failure in one step is logged but doesn't abort the
   others — better to have partial training than none.
   """
-  log.info("=== Daily training pass starting ===")
+  log.info("=== Training pass starting ===")
   for name, module in TRAINING_STEPS:
     log.info("  → %s", name)
     try:
@@ -150,28 +177,64 @@ def run_training_pass(log: logging.Logger) -> None:
       log.error("  %s timed out", name)
     except Exception:
       log.error("  %s crashed:\n%s", name, traceback.format_exc())
-  log.info("=== Daily training pass complete ===")
+  log.info("=== Training pass complete ===")
+
+
+def _read_marker() -> tuple[str | None, set[int]]:
+  if not TRAIN_MARKER.exists():
+    return None, set()
+  parts = TRAIN_MARKER.read_text().strip().split()
+  if not parts:
+    return None, set()
+  date = parts[0]
+  hours: set[int] = set()
+  for p in parts[1:]:
+    try:
+      hours.add(int(p))
+    except ValueError:
+      continue
+  return date, hours
+
+
+def _write_marker(date: str, hours: set[int]) -> None:
+  TRAIN_MARKER.parent.mkdir(parents=True, exist_ok=True)
+  TRAIN_MARKER.write_text(
+    date + (" " + " ".join(str(h) for h in sorted(hours)) if hours else ""))
+
+
+def _due_slot(now: datetime) -> int | None:
+  """Most-recent scheduled training hour today that has already elapsed,
+  or None if we're earlier than the first slot."""
+  passed = [h for h in TRAIN_HOURS_UTC if h <= now.hour]
+  return max(passed) if passed else None
 
 
 def should_train_now(log: logging.Logger) -> bool:
   """
-  True iff we're past TRAIN_HOUR_UTC today and haven't trained yet today.
-  Idempotent across restarts via TRAIN_MARKER.
+  True iff today's most-recently-elapsed scheduled slot hasn't been
+  recorded as run yet. Idempotent across restarts via TRAIN_MARKER.
   """
   now = datetime.now(timezone.utc)
-  today = now.date().isoformat()
-  if now.hour < TRAIN_HOUR_UTC:
+  target = _due_slot(now)
+  if target is None:
     return False
-  if TRAIN_MARKER.exists():
-    last = TRAIN_MARKER.read_text().strip()
-    if last == today:
-      return False
+  date, hours_done = _read_marker()
+  if date == now.date().isoformat() and target in hours_done:
+    return False
   return True
 
 
 def mark_trained() -> None:
-  TRAIN_MARKER.parent.mkdir(parents=True, exist_ok=True)
-  TRAIN_MARKER.write_text(datetime.now(timezone.utc).date().isoformat())
+  now = datetime.now(timezone.utc)
+  target = _due_slot(now)
+  if target is None:
+    return
+  today = now.date().isoformat()
+  date, hours_done = _read_marker()
+  if date != today:
+    hours_done = set()
+  hours_done.add(target)
+  _write_marker(today, hours_done)
 
 
 # ── Polling pass ─────────────────────────────────────────────────────────
@@ -211,8 +274,9 @@ def _handle_signal(signum, frame):
 
 def main():
   log = setup_logging()
-  log.info("Bot starting. PAPER_TRADING=%s POLL_INTERVAL_SEC=%d TRAIN_HOUR_UTC=%d",
-           os.environ.get("PAPER_TRADING"), POLL_INTERVAL_SEC, TRAIN_HOUR_UTC)
+  log.info("Bot starting. PAPER_TRADING=%s POLL_INTERVAL_SEC=%d TRAIN_HOURS_UTC=%s",
+           os.environ.get("PAPER_TRADING"), POLL_INTERVAL_SEC,
+           ",".join(str(h) for h in TRAIN_HOURS_UTC))
   log.info("Cities: %s", list(CITIES.keys()))
   log.info("Logs:   %s", LOG_FILE)
 
